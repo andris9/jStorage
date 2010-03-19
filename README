@@ -1,7 +1,20 @@
-<p><strong>jStorage</strong> is a simple wrapper plugin both for Prototype and jQuery to store data on browser side.</p>
-<p>jStorage was first developed under the name of <a href="http://www.domcached.com">DOMCached</a> but since a lot of features were dropped to make it simpler (like the support for namespaces and such) it was renamed. DOMCached had separate files for working with Prototype and jQuery but jStorage can handle both in one go.</p>
-<p>jStorage makes use of HTML5 local storage where available and userData behavior in Internet Explorer older versions. Webkit SQLite is not supported.</p>
-<p>Current availability: jStorage supports all major browsers - Internet Explorer 6+, Firefox 2+, Safari 4+, Chrome 4+, Opera 10.50+</p>
-<p>If the browser doesn't support data caching, then no exceptions are raised - jStorage can still be used by the script but nothing is actually stored.</p> 	
-<p>jStorage is really small, just <b>2 kB</b> when minified!</p>
-<p><b>Project homepage:</p> <a href="http://www.jstorage.info">jstorage.info</a></p>
+jStorage is a simple wrapper plugin both for Prototype and jQuery to store data on browser side.
+
+jStorage was first developed under the name of DOMCached (http://www.domcached.com) but since 
+a lot of features were dropped to make it simpler (like the support for namespaces and such) 
+it was renamed. DOMCached had separate files for working with Prototype and jQuery but jStorage 
+can handle both in one go.
+
+jStorage makes use of HTML5 local storage where available and userData behavior in 
+Internet Explorer older versions. Webkit SQLite is not supported.
+
+Current availability: jStorage supports all major browsers - Internet Explorer 6+, Firefox 2+, 
+Safari 4+, Chrome 4+, Opera 10.50+
+
+If the browser doesn't support data caching, then no exceptions are raised - jStorage can still 
+be used by the script but nothing is actually stored.
+ 	
+jStorage is really small, just 2 kB when minified!
+
+Project homepage: http://www.jstorage.info
+
