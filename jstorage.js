@@ -4,6 +4,7 @@
  * all major browsers - IE6+, Firefox2+, Safari4+, Chrome4+ and Opera 10.5+
  *
  * Copyright (c) 2010 Andris Reinman, andris.reinman@gmail.com
+ * Project homepage: www.jstorage.info
  *
  * Licensed under MIT-style license:
  *
