@@ -177,7 +177,7 @@
 			 */
 			get: function(key, def){
 				this._checkKey(key);
-				if("aeg" in this._storage)
+				if(key in this._storage)
 					return this._storage[key];
 				return def?def:null;
 			},
