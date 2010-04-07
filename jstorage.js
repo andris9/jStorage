@@ -27,7 +27,7 @@
 /**
  * USAGE:
  * 
- * jStorage requires Prototype or jQuery! If jQuery is used, then
+ * jStorage requires Prototype, MooTools or jQuery! If jQuery is used, then
  * jQuery-JSON (http://code.google.com/p/jquery-json/) is also needed.
  * (jQuery-JSON needs to be loaded BEFORE jStorage!)
  * 
@@ -51,8 +51,8 @@
  */
 
 (function($){
-	if(!$ || !($.toJSON || Object.toJSON))
-		throw new Error("jQuery or Prototype needs to be loaded before jStorage!");
+	if(!$ || !($.toJSON || Object.toJSON || JSON))
+		throw new Error("jQuery, MooTools or Prototype needs to be loaded before jStorage!");
 	$.jStorage = {
 			
 			/* Version number */
@@ -68,10 +68,10 @@
 			_storage_elm: null,
 			
 			/* function to encode objects to JSON strings */
-			json_encode: $.toJSON || Object.toJSON,
+			json_encode: $.toJSON || Object.toJSON || JSON.encode,
 			
 			/* function to decode objects from JSON strings */
-			json_decode: $.evalJSON || function(str){
+			json_decode: $.evalJSON || (JSON && JSON.decode) || function(str){
 				return String(str).evalJSON();
 			},
 			
@@ -85,11 +85,11 @@
 			_init: function(){
 				/* Check if browser supports localStorage */
 				if("localStorage" in window){
-					this._storage_service = localStorage;
+					this._storage_service = window.localStorage;
 				}
 				/* Check if browser supports globalStorage */
 				else if("globalStorage" in window){
-					this._storage_service = globalStorage[document.domain]
+					this._storage_service = window.globalStorage[document.domain]
 				}
 				/* Check if browser supports userData behavior */
 				else{
