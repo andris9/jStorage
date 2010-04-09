@@ -51,7 +51,7 @@
  */
 
 (function($){
-	if(!$ || !($.toJSON || Object.toJSON || JSON))
+	if(!$ || !($.toJSON || Object.toJSON || window.JSON))
 		throw new Error("jQuery, MooTools or Prototype needs to be loaded before jStorage!");
 	$.jStorage = {
 			
@@ -68,10 +68,10 @@
 			_storage_elm: null,
 			
 			/* function to encode objects to JSON strings */
-			json_encode: $.toJSON || Object.toJSON || JSON.encode,
+			json_encode: $.toJSON || Object.toJSON || (window.JSON && JSON.encode),
 			
 			/* function to decode objects from JSON strings */
-			json_decode: $.evalJSON || (JSON && JSON.decode) || function(str){
+			json_decode: $.evalJSON || (window.JSON && JSON.decode) || function(str){
 				return String(str).evalJSON();
 			},
 			
