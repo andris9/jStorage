@@ -56,7 +56,7 @@
 	$.jStorage = {
 			
 			/* Version number */
-			version: "0.1.1",
+			version: "0.1.2",
 			
 			/* This is the object, that holds the cached values */
 			_storage: {},
