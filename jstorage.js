@@ -23,60 +23,61 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
- 
+
 /**
  * USAGE:
- * 
+ *
  * jStorage requires Prototype, MooTools or jQuery! If jQuery is used, then
  * jQuery-JSON (http://code.google.com/p/jquery-json/) is also needed.
  * (jQuery-JSON needs to be loaded BEFORE jStorage!)
- * 
+ *
  * Methods:
- * 
+ *
  * -set(key, value)
  * $.jStorage.set(key, value) -> saves a value
- * 
+ *
  * -get(key[, default])
- * value = $.jStorage.get(key [, default]) -> 
+ * value = $.jStorage.get(key [, default]) ->
  * 		retrieves value if key exists, or default if it doesn't
- * 
+ *
  * -deleteKey(key)
  * $.jStorage.deleteKey(key) -> removes a key from the storage
- * 
+ *
  * -flush()
  * $.jStorage.flush() -> clears the cache
- * 
+ *
  * <value> can be any JSON-able value, including objects and arrays.
- * 
+ *
  */
 
 (function($){
-	if(!$ || !($.toJSON || Object.toJSON || window.JSON))
+	if(!$ || !($.toJSON || Object.toJSON || window.JSON)){
 		throw new Error("jQuery, MooTools or Prototype needs to be loaded before jStorage!");
+	}
 	$.jStorage = {
-			
+
 			/* Version number */
 			version: "0.1.2",
-			
+
 			/* This is the object, that holds the cached values */
 			_storage: {},
-			
+
 			/* Actual browser storage (localStorage or globalStorage['domain']) */
 			_storage_service: {jStorage:"{}"},
-			
+
 			/* DOM element for older IE versions, holds userData behavior */
 			_storage_elm: null,
-			
+
 			/* function to encode objects to JSON strings */
 			json_encode: $.toJSON || Object.toJSON || (window.JSON && JSON.encode),
-			
+
 			/* function to decode objects from JSON strings */
 			json_decode: $.evalJSON || (window.JSON && JSON.decode) || function(str){
 				return String(str).evalJSON();
 			},
-			
+
 			////////////////////////// PRIVATE METHODS ////////////////////////
-			
+
 			/**
 			 * Initialization function. Detects if the browser supports DOM Storage
 			 * or userData behavior and behaves accordingly.
@@ -95,13 +96,13 @@
 				else{
 					this._storage_elm = document.createElement('link')
 					if("addBehavior" in this._storage_elm){
-						
+
 						/* Use a DOM element to act as userData storage */
 						this._storage_elm.style.behavior = 'url(#default#userData)';
-						
+
 						/* userData element needs to be inserted into the DOM! */
 						document.getElementsByTagName('head')[0].appendChild(this._storage_elm);
-						
+
 						this._storage_elm.load("jStorage");
 						try{
 							var data = this._storage_elm.getAttribute("jStorage")
@@ -114,7 +115,7 @@
 						return;
 					}
 				}
-				/* if jStorage string is retrieved, then decode it */ 
+				/* if jStorage string is retrieved, then decode it */
 				if("jStorage" in this._storage_service && this._storage_service.jStorage){
 					try{
 						this._storage = this.json_decode(this._storage_service.jStorage);
@@ -123,7 +124,7 @@
 					this._storage_service.jStorage = "{}";
 				}
 			},
-			
+
 			/**
 			 * This functions provides the "save" mechanism to store the jStorage object
 			 * @returns undefined
@@ -142,7 +143,7 @@
 					}
 				}
 			},
-			
+
 			/**
 			 * Function checks if a key is set and is string or numberic
 			 */
@@ -152,14 +153,14 @@
 				}
 				return true;
 			},
-			
+
 			////////////////////////// PUBLIC METHODS /////////////////////////
-			
+
 			/**
 			 * Sets a key's value.
 			 * @param {String} key - Key to set. If this value is not set or not
 			 * 						a string an exception is raised.
-			 * @param value - Value to set. This can be any value that is JSON 
+			 * @param value - Value to set. This can be any value that is JSON
 			 * 				 compatible (Numbers, Strings, Objects etc.).
 			 * @returns the used value
 			 */
@@ -177,8 +178,9 @@
 			 */
 			get: function(key, def){
 				this._checkKey(key);
-				if(key in this._storage)
+				if(key in this._storage){
 					return this._storage[key];
+				}
 				return def?def:null;
 			},
 			/**
