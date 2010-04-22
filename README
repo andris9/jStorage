@@ -1,4 +1,5 @@
-jStorage is a simple wrapper plugin for Prototype, MooTools and jQuery to store data on browser side.
+jStorage is a simple wrapper plugin for Prototype, MooTools and jQuery to store data on
+browser side and to replace the use of cookies for storing data.
 
 jStorage was first developed under the name of DOMCached (http://www.domcached.com) but since 
 a lot of features were dropped to make it simpler (like the support for namespaces and such) 
