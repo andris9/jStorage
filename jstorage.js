@@ -38,7 +38,7 @@
  *
  * -get(key[, default])
  * value = $.jStorage.get(key [, default]) ->
- * 		retrieves value if key exists, or default if it doesn't
+ *    retrieves value if key exists, or default if it doesn't
  *
  * -deleteKey(key)
  * $.jStorage.deleteKey(key) -> removes a key from the storage
@@ -84,17 +84,19 @@
 			 * @returns undefined
 			 */
 			_init: function(){
+				/* Variable declarations */
+				var data;
 				/* Check if browser supports localStorage */
 				if("localStorage" in window){
 					this._storage_service = window.localStorage;
 				}
 				/* Check if browser supports globalStorage */
 				else if("globalStorage" in window){
-					this._storage_service = window.globalStorage[document.domain]
+					this._storage_service = window.globalStorage[document.domain];
 				}
 				/* Check if browser supports userData behavior */
 				else{
-					this._storage_elm = document.createElement('link')
+					this._storage_elm = document.createElement('link');
 					if("addBehavior" in this._storage_elm){
 
 						/* Use a DOM element to act as userData storage */
@@ -105,8 +107,8 @@
 
 						this._storage_elm.load("jStorage");
 						try{
-							var data = this._storage_elm.getAttribute("jStorage")
-						}catch(E){var data = "{}"}
+							data = this._storage_elm.getAttribute("jStorage");
+						}catch(E1){data = "{}";}
 						if(data && data.length){
 							this._storage_service.jStorage = data;
 						}
@@ -119,7 +121,7 @@
 				if("jStorage" in this._storage_service && this._storage_service.jStorage){
 					try{
 						this._storage = this.json_decode(this._storage_service.jStorage);
-					}catch(E){this._storage_service.jStorage = "{}";}
+					}catch(E2){this._storage_service.jStorage = "{}";}
 				}else{
 					this._storage_service.jStorage = "{}";
 				}
@@ -133,13 +135,13 @@
 				if(this._storage_service){
 					try{
 						this._storage_service.jStorage = this.json_encode(this._storage);
-					}catch(E){/* probably cache is full, nothing is saved this way*/}
+					}catch(E3){/* probably cache is full, nothing is saved this way*/}
 					// If userData is used as the storage engine, additional
 					if(this._storage_elm){
 						try{
-							this._storage_elm.setAttribute("jStorage",this._storage_service.jStorage)
+							this._storage_elm.setAttribute("jStorage",this._storage_service.jStorage);
 							this._storage_elm.save("jStorage");
-						}catch(E){/* probably cache is full, nothing is saved this way*/}
+						}catch(E4){/* probably cache is full, nothing is saved this way*/}
 					}
 				}
 			},
@@ -159,9 +161,9 @@
 			/**
 			 * Sets a key's value.
 			 * @param {String} key - Key to set. If this value is not set or not
-			 * 						a string an exception is raised.
+			 *				a string an exception is raised.
 			 * @param value - Value to set. This can be any value that is JSON
-			 * 				 compatible (Numbers, Strings, Objects etc.).
+			 *				compatible (Numbers, Strings, Objects etc.).
 			 * @returns the used value
 			 */
 			set: function(key, value){
@@ -206,7 +208,7 @@
 				this._save();
 				return true;
 			}
-		}
+		};
 	// load saved data from browser
 	$.jStorage._init();
 })(typeof jQuery != "undefined" && jQuery || $);
