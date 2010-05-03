@@ -57,7 +57,7 @@
 	$.jStorage = {
 
 			/* Version number */
-			version: "0.1.2",
+			version: "0.1.2.1",
 
 			/* This is the object, that holds the cached values */
 			_storage: {},
@@ -69,10 +69,10 @@
 			_storage_elm: null,
 
 			/* function to encode objects to JSON strings */
-			json_encode: $.toJSON || Object.toJSON || (window.JSON && JSON.encode),
+			json_encode: $.toJSON || Object.toJSON || (window.JSON && (JSON.encode || JSON.stringify)),
 
 			/* function to decode objects from JSON strings */
-			json_decode: $.evalJSON || (window.JSON && JSON.decode) || function(str){
+			json_decode: $.evalJSON || (window.JSON && (JSON.decode || JSON.parse)) || function(str){
 				return String(str).evalJSON();
 			},
 
