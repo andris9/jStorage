@@ -206,6 +206,11 @@
 			flush: function(){
 				this._storage = {};
 				this._save();
+				/*
+				 * Just to be sure - andris9/jStorage#3
+				 * */
+				if("localStorage" in window)
+					localStorage.clear()
 				return true;
 			}
 		};
