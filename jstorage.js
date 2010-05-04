@@ -84,20 +84,21 @@
 			 * @returns undefined
 			 */
 			_init: function(){
-				/* Variable declarations */
-				var data;
-				/* Check if browser supports localStorage */
-				if("localStorage" in window){
-					this._storage_service = window.localStorage;
-				}
-				/* Check if browser supports globalStorage */
-				else if("globalStorage" in window){
-					this._storage_service = window.globalStorage[document.domain];
-				}
+                                try {
+                                        /* Check if browser supports localStorage */
+                                        if(window.localStorage){
+                                                this._storage_service = window.localStorage;
+                                        }
+                                        /* Check if browser supports globalStorage */
+                                        else if(window.globalStorage){
+                                                this._storage_service = window.globalStorage[document.domain];
+                                        }
+                                } catch(E) {/* Firefox fails when touching localStorage and cookies are disabled */}
+
 				/* Check if browser supports userData behavior */
-				else{
+				if (!this._storage_service) {
 					this._storage_elm = document.createElement('link');
-					if("addBehavior" in this._storage_elm){
+					if(this._storage_elm.addBehavior){
 
 						/* Use a DOM element to act as userData storage */
 						this._storage_elm.style.behavior = 'url(#default#userData)';
@@ -106,19 +107,18 @@
 						document.getElementsByTagName('head')[0].appendChild(this._storage_elm);
 
 						this._storage_elm.load("jStorage");
+                                                var data = "{}";
 						try{
 							data = this._storage_elm.getAttribute("jStorage");
-						}catch(E1){data = "{}";}
-						if(data && data.length){
-							this._storage_service.jStorage = data;
-						}
+						}catch(E1){}
+                                                this._storage_service.jStorage = data;
 					}else{
 						this._storage_elm = null;
 						return;
 					}
 				}
 				/* if jStorage string is retrieved, then decode it */
-				if("jStorage" in this._storage_service && this._storage_service.jStorage){
+				if(this._storage_service.jStorage){
 					try{
 						this._storage = this.json_decode(this._storage_service.jStorage);
 					}catch(E2){this._storage_service.jStorage = "{}";}
@@ -132,18 +132,15 @@
 			 * @returns undefined
 			 */
 			_save:function(){
-				if(this._storage_service){
-					try{
+				try{
+                                        if(this._storage_service)
 						this._storage_service.jStorage = this.json_encode(this._storage);
-					}catch(E3){/* probably cache is full, nothing is saved this way*/}
 					// If userData is used as the storage engine, additional
-					if(this._storage_elm){
-						try{
-							this._storage_elm.setAttribute("jStorage",this._storage_service.jStorage);
-							this._storage_elm.save("jStorage");
-						}catch(E4){/* probably cache is full, nothing is saved this way*/}
+					if(this._storage_elm) {
+                                                this._storage_elm.setAttribute("jStorage",this._storage_service.jStorage);
+                                                this._storage_elm.save("jStorage");
 					}
-				}
+				}catch(E4){/* probably cache is full, nothing is saved this way*/}
 			},
 
 			/**
@@ -183,7 +180,7 @@
 				if(key in this._storage){
 					return this._storage[key];
 				}
-				return def?def:null;
+				return typeof(def) == 'undefined' ? null : def;
 			},
 			/**
 			 * Deletes a key from cache.
@@ -209,11 +206,11 @@
 				/*
 				 * Just to be sure - andris9/jStorage#3
 				 * */
-				if("localStorage" in window)
-					localStorage.clear()
+				if (window.localStorage)
+					localStorage.clear();
 				return true;
 			}
 		};
 	// load saved data from browser
 	$.jStorage._init();
-})(typeof jQuery != "undefined" && jQuery || $);
+})(window.jQuery || window.$);
