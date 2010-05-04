@@ -122,7 +122,7 @@
                  }else{
                          _storage_service.jStorage = "{}";
                  }
-         };
+         }
 
          /**
           * This functions provides the "save" mechanism to store the jStorage object
@@ -138,7 +138,7 @@
                                  _storage_elm.save("jStorage");
                          }
                  }catch(E4){/* probably cache is full, nothing is saved this way*/}
-         };
+         }
 
          /**
           * Function checks if a key is set and is string or numberic
@@ -148,7 +148,7 @@
                          throw new TypeError('Key name must be string or numeric');
                  }
                  return true;
-         };
+         }
 
          ////////////////////////// PUBLIC INTERFACE /////////////////////////
 
