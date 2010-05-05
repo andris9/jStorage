@@ -90,7 +90,7 @@
 		/* Check if browser supports globalStorage */
 		else if(window.globalStorage){
 			try {
-				_storage_service = window.globalStorage[document.domain];
+				_storage_service = window.globalStorage[window.location.hostname];
 			} catch(E1) {/* Firefox fails when touching localStorage and cookies are disabled */}
 		}
 		/* Check if browser supports userData behavior */
