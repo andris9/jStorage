@@ -54,164 +54,188 @@
 	if(!$ || !($.toJSON || Object.toJSON || window.JSON)){
 		throw new Error("jQuery, MooTools or Prototype needs to be loaded before jStorage!");
 	}
+	
+	var
+		/* This is the object, that holds the cached values */ 
+		_storage = {},
 
-        /* This is the object, that holds the cached values */
-        var _storage = {};
+		/* Actual browser storage (localStorage or globalStorage['domain']) */
+		_storage_service = {jStorage:"{}"},
 
-        /* Actual browser storage (localStorage or globalStorage['domain']) */
-        var _storage_service = {jStorage:"{}"};
+		/* DOM element for older IE versions, holds userData behavior */
+		_storage_elm = null,
 
-        /* DOM element for older IE versions, holds userData behavior */
-        var _storage_elm = null;
+		/* function to encode objects to JSON strings */
+		json_encode = $.toJSON || Object.toJSON || (window.JSON && (JSON.encode || JSON.stringify)),
 
-        /* function to encode objects to JSON strings */
-	var json_encode = $.toJSON || Object.toJSON || (window.JSON && (JSON.encode || JSON.stringify));
+		/* function to decode objects from JSON strings */
+		json_decode = $.evalJSON || (window.JSON && (JSON.decode || JSON.parse)) || function(str){
+			return String(str).evalJSON();
+		};
 
-        /* function to decode objects from JSON strings */
-        var json_decode = $.evalJSON || (window.JSON && (JSON.decode || JSON.parse)) || function(str){
-                return String(str).evalJSON();
-        };
+	////////////////////////// PRIVATE METHODS ////////////////////////
 
-        ////////////////////////// PRIVATE METHODS ////////////////////////
+	/**
+	 * Initialization function. Detects if the browser supports DOM Storage
+	 * or userData behavior and behaves accordingly.
+	 * @returns undefined
+	 */
+	function _init(){
+		/* Check if browser supports localStorage */
+		if(window.localStorage){
+			try {
+				_storage_service = window.localStorage;
+			} catch(E0) {/* Firefox fails when touching localStorage and cookies are disabled */}
+		}
+		/* Check if browser supports globalStorage */
+		else if(window.globalStorage){
+			try {
+				_storage_service = window.globalStorage[document.domain];
+			} catch(E1) {/* Firefox fails when touching localStorage and cookies are disabled */}
+		}
+		/* Check if browser supports userData behavior */
+		else {
+			_storage_elm = document.createElement('link');
+			if(_storage_elm.addBehavior){
 
-        /**
-         * Initialization function. Detects if the browser supports DOM Storage
-         * or userData behavior and behaves accordingly.
-         * @returns undefined
-         */
-         function _init(){
-                 try {
-                         /* Check if browser supports localStorage */
-                         if(window.localStorage){
-                                 _storage_service = window.localStorage;
-                         }
-                         /* Check if browser supports globalStorage */
-                         else if(window.globalStorage){
-                                 _storage_service = window.globalStorage[document.domain];
-                         }
-                 } catch(E) {/* Firefox fails when touching localStorage and cookies are disabled */}
+				/* Use a DOM element to act as userData storage */
+				_storage_elm.style.behavior = 'url(#default#userData)';
 
-                 /* Check if browser supports userData behavior */
-                 if (!_storage_service) {
-                         _storage_elm = document.createElement('link');
-                         if(_storage_elm.addBehavior){
+				/* userData element needs to be inserted into the DOM! */
+				document.getElementsByTagName('head')[0].appendChild(_storage_elm);
 
-                                 /* Use a DOM element to act as userData storage */
-                                 _storage_elm.style.behavior = 'url(#default#userData)';
+				_storage_elm.load("jStorage");
+				var data = "{}";
+				try{
+					data = _storage_elm.getAttribute("jStorage");
+				}catch(E2){}
+				_storage_service.jStorage = data;
+			}else{
+				_storage_elm = null;
+				return;
+			}
+		}
 
-                                 /* userData element needs to be inserted into the DOM! */
-                                 document.getElementsByTagName('head')[0].appendChild(_storage_elm);
+		/* if jStorage string is retrieved, then decode it */
+		if(_storage_service.jStorage){
+			try{
+				_storage = json_decode(_storage_service.jStorage);
+			}catch(E3){_storage_service.jStorage = "{}";}
+		}else{
+			_storage_service.jStorage = "{}";
+		}
+	}
 
-                                 _storage_elm.load("jStorage");
-                                 var data = "{}";
-                                 try{
-                                         data = _storage_elm.getAttribute("jStorage");
-                                 }catch(E1){}
-                                 _storage_service.jStorage = data;
-                         }else{
-                                 _storage_elm = null;
-                                 return;
-                         }
-                 }
+	/**
+	 * This functions provides the "save" mechanism to store the jStorage object
+	 * @returns undefined
+	 */
+	function _save(){
+		try{
+			_storage_service.jStorage = json_encode(_storage);
+			// If userData is used as the storage engine, additional
+			if(_storage_elm) {
+				_storage_elm.setAttribute("jStorage",_storage_service.jStorage);
+				_storage_elm.save("jStorage");
+			}
+		}catch(E4){/* probably cache is full, nothing is saved this way*/}
+	}
 
-                 /* if jStorage string is retrieved, then decode it */
-                 if(_storage_service.jStorage){
-                         try{
-                                 _storage = json_decode(_storage_service.jStorage);
-                         }catch(E2){_storage_service.jStorage = "{}";}
-                 }else{
-                         _storage_service.jStorage = "{}";
-                 }
-         }
+	/**
+	 * Function checks if a key is set and is string or numberic
+	 */
+	function _checkKey(key){
+		if(!key || (typeof key != "string" && typeof key != "number")){
+			throw new TypeError('Key name must be string or numeric');
+		}
+		return true;
+	}
 
-         /**
-          * This functions provides the "save" mechanism to store the jStorage object
-          * @returns undefined
-          */
-         function _save(){
-                 try{
-                         if(_storage_service)
-                                 _storage_service.jStorage = json_encode(_storage);
-                         // If userData is used as the storage engine, additional
-                         if(_storage_elm) {
-                                 _storage_elm.setAttribute("jStorage",_storage_service.jStorage);
-                                 _storage_elm.save("jStorage");
-                         }
-                 }catch(E4){/* probably cache is full, nothing is saved this way*/}
-         }
+	////////////////////////// PUBLIC INTERFACE /////////////////////////
 
-         /**
-          * Function checks if a key is set and is string or numberic
-          */
-         function _checkKey(key){
-                 if(!key || (typeof key != "string" && typeof key != "number")){
-                         throw new TypeError('Key name must be string or numeric');
-                 }
-                 return true;
-         }
+	$.jStorage = {
+		/* Version number */
+		version: "0.1.3",
 
-         ////////////////////////// PUBLIC INTERFACE /////////////////////////
+		/**
+		 * Sets a key's value.
+		 * 
+		 * @param {String} key - Key to set. If this value is not set or not
+		 *				a string an exception is raised.
+		 * @param value - Value to set. This can be any value that is JSON
+		 *				compatible (Numbers, Strings, Objects etc.).
+		 * @returns the used value
+		 */
+		set: function(key, value){
+			_checkKey(key);
+			_storage[key] = value;
+			_save();
+			return value;
+		},
+		
+		/**
+		 * Looks up a key in cache
+		 * 
+		 * @param {String} key - Key to look up.
+		 * @param {mixed} def - Default value to return, if key didn't exist.
+		 * @returns the key value, default value or <null>
+		 */
+		get: function(key, def){
+			_checkKey(key);
+			if(key in _storage){
+				return _storage[key];
+			}
+			return typeof(def) == 'undefined' ? null : def;
+		},
+		
+		/**
+		 * Deletes a key from cache.
+		 * 
+		 * @param {String} key - Key to delete.
+		 * @returns true if key existed or false if it didn't
+		 */
+		deleteKey: function(key){
+			_checkKey(key);
+			if(key in _storage){
+				delete _storage[key];
+				_save();
+				return true;
+			}
+			return false;
+		},
 
-         $.jStorage = {
-                 /* Version number */
-                 version: "0.1.2.1",
+		/**
+		 * Deletes everything in cache.
+		 * 
+		 * @returns true
+		 */
+		flush: function(){
+			_storage = {};
+			_save();
+			/*
+			 * Just to be sure - andris9/jStorage#3
+			 */
+			if (window.localStorage){
+				try{
+					localStorage.clear();
+				}catch(E5){}
+			}
+			return true;
+		},
+		
+		/**
+		 * Returns a read-only copy of _storage
+		 * 
+		 * @returns Object
+		*/
+		storageObj: function(){
+			function F() {}
+			F.prototype = _storage;
+			return new F();
+		}
+	};
 
-                 /**
-                  * Sets a key's value.
-                  * @param {String} key - Key to set. If this value is not set or not
-                  *				a string an exception is raised.
-                  * @param value - Value to set. This can be any value that is JSON
-                  *				compatible (Numbers, Strings, Objects etc.).
-                  * @returns the used value
-                  */
-                 set: function(key, value){
-                         _checkKey(key);
-                         _storage[key] = value;
-                         _save();
-                         return value;
-                 },
-                 /**
-                  * Looks up a key in cache
-                  * @param {String} key - Key to look up.
-                  * @param {mixed} def - Default value to return, if key didn't exist.
-                  * @returns the key value, default value or <null>
-                  */
-                 get: function(key, def){
-                         _checkKey(key);
-                         if(key in _storage){
-                                 return _storage[key];
-                         }
-                         return typeof(def) == 'undefined' ? null : def;
-                 },
-                 /**
-                  * Deletes a key from cache.
-                  * @param {String} key - Key to delete.
-                  * @returns true if key existed or false if it didn't
-                  */
-                 deleteKey: function(key){
-                         _checkKey(key);
-                         if(key in _storage){
-                                 delete _storage[key];
-                                 _save();
-                                 return true;
-                         }
-                         return false;
-                 },
-                 /**
-                  * Deletes everything in cache.
-                  * @returns true
-                  */
-                 flush: function(){
-                         _storage = {};
-                         _save();
-                         /*
-                          * Just to be sure - andris9/jStorage#3
-                          * */
-                         if (window.localStorage)
-                                 localStorage.clear();
-                         return true;
-                 }
-         };
+	// Initialize jStorage
+	_init();
 
-         _init();
 })(window.jQuery || window.$);
