@@ -119,7 +119,7 @@
 		/* if jStorage string is retrieved, then decode it */
 		if(_storage_service.jStorage){
 			try{
-				_storage = json_decode(_storage_service.jStorage);
+				_storage = json_decode(String(_storage_service.jStorage));
 			}catch(E3){_storage_service.jStorage = "{}";}
 		}else{
 			_storage_service.jStorage = "{}";
