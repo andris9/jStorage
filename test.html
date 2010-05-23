@@ -65,19 +65,19 @@
 				 * @return
 				 */
 				reDraw: function(){
-					var row, del, st=$.jStorage.storageObj()
+					var row, del, indx=$.jStorage.index();
 					$$("tr[class~=rida]").each(function(c){c.remove();});
-					for(var i in st){
+					for(var i=0; i<indx.length; i++){
 						row = new Element("tr",{className:"rida"});
-						row.insert(new Element("td").update(i));
-						row.insert(new Element("td").update(st[i]));
+						row.insert(new Element("td").update(indx[i]));
+						row.insert(new Element("td").update($.jStorage.get(indx[i])));
 						del = new Element("a",{href:"javascript:void(0)"}).update("DEL");
 						(function(i){
 							del.observe("click", function(){
 								$.jStorage.deleteKey(i);
 								this.reDraw();
 							});
-						}).call(this,i)
+						}).call(this,indx[i])
 						row.insert(new Element("td").insert(del));
 						$("tulemused").insert(row);
 					}

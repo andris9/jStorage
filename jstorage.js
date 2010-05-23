@@ -45,7 +45,16 @@
  *
  * -flush()
  * $.jStorage.flush() -> clears the cache
+ * 
+ * -storageObj()
+ * $.jStorage.storageObj() -> returns a read-ony copy of the actual storage
+ * 
+ * -storageSize()
+ * $.jStorage.storageSize() -> returns the size of the storage in bytes
  *
+ * -index()
+ * $.jStorage.index() -> returns the used keys as an array
+ * 
  * <value> can be any JSON-able value, including objects and arrays.
  *
  */
@@ -64,6 +73,9 @@
 
 		/* DOM element for older IE versions, holds userData behavior */
 		_storage_elm = null,
+		
+		/* How much space does the storage take */
+		_storage_size = 0,
 
 		/* function to encode objects to JSON strings */
 		json_encode = $.toJSON || Object.toJSON || (window.JSON && (JSON.encode || JSON.stringify)),
@@ -71,6 +83,64 @@
 		/* function to decode objects from JSON strings */
 		json_decode = $.evalJSON || (window.JSON && (JSON.decode || JSON.parse)) || function(str){
 			return String(str).evalJSON();
+		},
+		
+		/**
+		 * XML encoding and decoding as XML nodes can't be JSON'ized
+		 * XML nodes are encoded and decoded if the node is the value to be saved
+		 * but not if it's as a property of another object
+		 * Eg. -
+		 *   $.jStorage.set("key", xmlNode);        // IS OK
+		 *   $.jStorage.set("key", {xml: xmlNode}); // NOT OK
+		 */
+		_XMLService = {
+			
+			/**
+			 * Validates a XML node to be XML
+			 * based on jQuery.isXML function
+			 */
+			isXML: function(elm){
+				var documentElement = (elm ? elm.ownerDocument || elm : 0).documentElement;
+				return documentElement ? documentElement.nodeName !== "HTML" : false;
+			},
+			
+			/**
+			 * Encodes a XML node to string
+			 * based on http://www.mercurytide.co.uk/news/article/issues-when-working-ajax/
+			 */
+			encode: function(xmlNode) {
+				if(!this.isXML(xmlNode)){
+					return false;
+				}
+				try{ // Mozilla, Webkit, Opera
+					return new XMLSerializer().serializeToString(xmlNode);
+				}catch(E1) {
+					try {  // IE
+						return xmlNode.xml;
+					}catch(E2){}
+				}
+				return false;
+			},
+			
+			/**
+			 * Decodes a XML node from string
+			 * loosely based on http://outwestmedia.com/jquery-plugins/xmldom/
+			 */
+			decode: function(xmlString){
+				var dom_parser = ("DOMParser" in window && (new DOMParser()).parseFromString) ||
+						(window.ActiveXObject && function(_xmlString) {
+					var xml_doc = new ActiveXObject('Microsoft.XMLDOM');
+					xml_doc.async = 'false';
+					xml_doc.loadXML(_xmlString);
+					return xml_doc;
+				}),
+				resultXML;
+				if(!dom_parser){
+					return false;
+				}
+				resultXML = dom_parser.call("DOMParser" in window && (new DOMParser()) || window, xmlString, 'text/xml');
+				return this.isXML(resultXML)?resultXML:false;
+			}
 		};
 
 	////////////////////////// PRIVATE METHODS ////////////////////////
@@ -85,13 +155,13 @@
 		if(window.localStorage){
 			try {
 				_storage_service = window.localStorage;
-			} catch(E0) {/* Firefox fails when touching localStorage and cookies are disabled */}
+			} catch(E3) {/* Firefox fails when touching localStorage and cookies are disabled */}
 		}
 		/* Check if browser supports globalStorage */
 		else if(window.globalStorage){
 			try {
 				_storage_service = window.globalStorage[window.location.hostname];
-			} catch(E1) {/* Firefox fails when touching localStorage and cookies are disabled */}
+			} catch(E4) {/* Firefox fails when touching localStorage and cookies are disabled */}
 		}
 		/* Check if browser supports userData behavior */
 		else {
@@ -108,7 +178,7 @@
 				var data = "{}";
 				try{
 					data = _storage_elm.getAttribute("jStorage");
-				}catch(E2){}
+				}catch(E5){}
 				_storage_service.jStorage = data;
 			}else{
 				_storage_elm = null;
@@ -120,10 +190,11 @@
 		if(_storage_service.jStorage){
 			try{
 				_storage = json_decode(String(_storage_service.jStorage));
-			}catch(E3){_storage_service.jStorage = "{}";}
+			}catch(E6){_storage_service.jStorage = "{}";}
 		}else{
 			_storage_service.jStorage = "{}";
 		}
+		_storage_size = _storage_service.jStorage?String(_storage_service.jStorage).length:0;
 	}
 
 	/**
@@ -138,7 +209,8 @@
 				_storage_elm.setAttribute("jStorage",_storage_service.jStorage);
 				_storage_elm.save("jStorage");
 			}
-		}catch(E4){/* probably cache is full, nothing is saved this way*/}
+			_storage_size = _storage_service.jStorage?String(_storage_service.jStorage).length:0;
+		}catch(E7){/* probably cache is full, nothing is saved this way*/}
 	}
 
 	/**
@@ -155,7 +227,7 @@
 
 	$.jStorage = {
 		/* Version number */
-		version: "0.1.3",
+		version: "0.1.4",
 
 		/**
 		 * Sets a key's value.
@@ -168,6 +240,9 @@
 		 */
 		set: function(key, value){
 			_checkKey(key);
+			if(_XMLService.isXML(value)){
+				value = {_is_xml:true,xml:_XMLService.encode(value)};
+			}
 			_storage[key] = value;
 			_save();
 			return value;
@@ -183,7 +258,13 @@
 		get: function(key, def){
 			_checkKey(key);
 			if(key in _storage){
-				return _storage[key];
+				if(typeof _storage[key] == "object" &&
+						_storage[key]._is_xml &&
+							_storage[key]._is_xml){
+					return _XMLService.decode(_storage[key].xml);
+				}else{
+					return _storage[key];
+				}
 			}
 			return typeof(def) == 'undefined' ? null : def;
 		},
@@ -215,11 +296,9 @@
 			/*
 			 * Just to be sure - andris9/jStorage#3
 			 */
-			if (window.localStorage){
-				try{
-					localStorage.clear();
-				}catch(E5){}
-			}
+			try{
+				window.localStorage.clear();
+			}catch(E8){}
 			return true;
 		},
 		
@@ -232,6 +311,31 @@
 			function F() {}
 			F.prototype = _storage;
 			return new F();
+		},
+		
+		/**
+		 * Returns an index of all used keys as an array
+		 * ['key1', 'key2',..'keyN']
+		 * 
+		 * @returns Array
+		*/
+		index: function(){
+			var index = [], i;
+			for(i in _storage){
+				if(_storage.hasOwnProperty(i)){
+					index.push(i);
+				}
+			}
+			return index;
+		},
+		
+		/**
+		 * How much space in bytes does the storage take?
+		 * 
+		 * @returns Number
+		 */
+		storageSize: function(){
+			return _storage_size;
 		}
 	};
 
