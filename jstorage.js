@@ -217,7 +217,7 @@
 	 * Function checks if a key is set and is string or numberic
 	 */
 	function _checkKey(key){
-		if(!key || (typeof key != "string" && typeof key != "number")){
+		if((!key && key!==0) || (typeof key != "string" && typeof key != "number")){
 			throw new TypeError('Key name must be string or numeric');
 		}
 		return true;
