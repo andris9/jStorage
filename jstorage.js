@@ -57,6 +57,9 @@
  * -index()
  * $.jStorage.index() -> returns the used keys as an array
  * 
+ * -reInit()
+ * $.jStorage.reInit() -> reloads the data from browser storage
+ * 
  * <value> can be any JSON-able value, including objects and arrays.
  *
  **/
@@ -194,6 +197,14 @@
             }
         }
 
+        _load_storage();
+    }
+    
+    /**
+     * Loads the data from the storage based on the supported mechanism
+     * @returns undefined
+     */
+    function _load_storage(){
         /* if jStorage string is retrieved, then decode it */
         if(_storage_service.jStorage){
             try{
@@ -202,7 +213,7 @@
         }else{
             _storage_service.jStorage = "{}";
         }
-        _storage_size = _storage_service.jStorage?String(_storage_service.jStorage).length:0;
+        _storage_size = _storage_service.jStorage?String(_storage_service.jStorage).length:0;    
     }
 
     /**
@@ -235,7 +246,7 @@
 
     $.jStorage = {
         /* Version number */
-        version: "0.1.4.1",
+        version: "0.1.4.2",
 
         /**
          * Sets a key's value.
@@ -353,6 +364,37 @@
          */
         currentBackend: function(){
             return _backend;
+        },
+        
+        /**
+         * Reloads the data from browser storage
+         * 
+         * @returns undefined
+         */
+        reInit: function(){
+            var new_storage_elm, data;
+            if(_storage_elm && _storage_elm.addBehavior){
+                new_storage_elm = document.createElement('link');
+                
+                _storage_elm.parentNode.replaceChild(new_storage_elm, _storage_elm);
+                _storage_elm = new_storage_elm;
+                
+                /* Use a DOM element to act as userData storage */
+                _storage_elm.style.behavior = 'url(#default#userData)';
+
+                /* userData element needs to be inserted into the DOM! */
+                document.getElementsByTagName('head')[0].appendChild(_storage_elm);
+
+                _storage_elm.load("jStorage");
+                data = "{}";
+                try{
+                    data = _storage_elm.getAttribute("jStorage");
+                }catch(E5){}
+                _storage_service.jStorage = data;
+                _backend = "userDataBehavior";
+            }
+            
+            _load_storage();
         }
     };
 
