@@ -160,14 +160,14 @@
      */
     function _init(){
         /* Check if browser supports localStorage */
-        if(window.localStorage){
+        if("localStorage" in window){
             try {
                 _storage_service = window.localStorage;
                 _backend = "localStorage";
             } catch(E3) {/* Firefox fails when touching localStorage and cookies are disabled */}
         }
         /* Check if browser supports globalStorage */
-        else if(window.globalStorage){
+        else if("globalStorage" in window){
             try {
                 _storage_service = window.globalStorage[window.location.hostname];
                 _backend = "globalStorage";
@@ -246,7 +246,7 @@
 
     $.jStorage = {
         /* Version number */
-        version: "0.1.4.2",
+        version: "0.1.4.3",
 
         /**
          * Sets a key's value.
