@@ -162,8 +162,10 @@
         /* Check if browser supports localStorage */
         if("localStorage" in window){
             try {
-                _storage_service = window.localStorage;
-                _backend = "localStorage";
+                if(window.localStorage) {
+                    _storage_service = window.localStorage;
+                    _backend = "localStorage";
+                }
             } catch(E3) {/* Firefox fails when touching localStorage and cookies are disabled */}
         }
         /* Check if browser supports globalStorage */
