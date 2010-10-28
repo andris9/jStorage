@@ -57,6 +57,9 @@
  * -index()
  * $.jStorage.index() -> returns the used keys as an array
  * 
+ * -storageAvailable()
+ * $.jStorage.storageAvailable() -> returns true if storage is available
+ * 
  * -reInit()
  * $.jStorage.reInit() -> reloads the data from browser storage
  * 
@@ -171,8 +174,10 @@
         /* Check if browser supports globalStorage */
         else if("globalStorage" in window){
             try {
-                _storage_service = window.globalStorage[window.location.hostname];
-                _backend = "globalStorage";
+                if(window.globalStorage) {
+                    _storage_service = window.globalStorage[window.location.hostname];
+                    _backend = "globalStorage";
+                }
             } catch(E4) {/* Firefox fails when touching localStorage and cookies are disabled */}
         }
         /* Check if browser supports userData behavior */
@@ -366,6 +371,15 @@
          */
         currentBackend: function(){
             return _backend;
+        },
+        
+        /**
+         * Test if storage is available
+         * 
+         * @returns Boolean
+         */
+        storageAvailable: function(){
+            return !!_backend;
         },
         
         /**
