@@ -253,7 +253,7 @@
 
     $.jStorage = {
         /* Version number */
-        version: "0.1.5.1",
+        version: "0.1.5.2",
 
         /**
          * Sets a key's value.
@@ -284,7 +284,7 @@
         get: function(key, def){
             _checkKey(key);
             if(key in _storage){
-                if(typeof _storage[key] == "object" &&
+                if(_storage[key] && typeof _storage[key] == "object" &&
                         _storage[key]._is_xml &&
                             _storage[key]._is_xml){
                     return _XMLService.decode(_storage[key].xml);
