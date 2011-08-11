@@ -253,7 +253,7 @@
 
     $.jStorage = {
         /* Version number */
-        version: "0.1.5.0",
+        version: "0.1.5.1",
 
         /**
          * Sets a key's value.
@@ -319,12 +319,6 @@
         flush: function(){
             _storage = {};
             _save();
-            /*
-             * Just to be sure - andris9/jStorage#3
-             */
-            try{
-                window.localStorage.clear();
-            }catch(E8){}
             return true;
         },
         
