@@ -94,7 +94,7 @@
         },
         
         /* which backend is currently used */
-        _backend = false;
+        _backend = false,
         
         /**
          * XML encoding and decoding as XML nodes can't be JSON'ized
@@ -253,7 +253,7 @@
 
     $.jStorage = {
         /* Version number */
-        version: "0.1.5.2",
+        version: "0.1.5.3",
 
         /**
          * Sets a key's value.
