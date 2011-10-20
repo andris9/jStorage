@@ -163,7 +163,18 @@
      */
     function _init(){
         /* Check if browser supports localStorage */
+        var localStorageReallyWorks = false;
         if("localStorage" in window){
+            try {
+                window.localStorage.setItem('_tmptest', 'tmpval');
+                localStorageReallyWorks = true;
+                window.localStorage.removeItem('_tmptest');
+            } catch(BogusQuotaExceededErrorOnIos5) {
+                // Thanks be to iOS5 Private Browsing mode which throws
+                // QUOTA_EXCEEDED_ERRROR DOM Exception 22.
+            }
+        }
+        if(localStorageReallyWorks){
             try {
                 if(window.localStorage) {
                     _storage_service = window.localStorage;
