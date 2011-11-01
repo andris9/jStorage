@@ -264,7 +264,7 @@
 
     $.jStorage = {
         /* Version number */
-        version: "0.1.5.3",
+        version: "0.1.5.4",
 
         /**
          * Sets a key's value.
