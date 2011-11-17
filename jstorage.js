@@ -96,6 +96,9 @@
         /* which backend is currently used */
         _backend = false,
         
+        /* Next check for TTL */
+        _ttl_timeout,
+        
         /**
          * XML encoding and decoding as XML nodes can't be JSON'ized
          * XML nodes are encoded and decoded if the node is the value to be saved
@@ -216,6 +219,9 @@
         }
 
         _load_storage();
+        
+        // remove dead keys
+        _handleTTL();
     }
     
     /**
@@ -257,14 +263,55 @@
         if(!key || (typeof key != "string" && typeof key != "number")){
             throw new TypeError('Key name must be string or numeric');
         }
+        if(key == "__jstorage_meta"){
+            throw new TypeError('Reserved key name');
+        }
         return true;
+    }
+
+    /**
+     * Removes expired keys
+     */
+    function _handleTTL(){
+        var curtime, i, TTL, nextExpire = Infinity, changed = false;
+        
+        clearTimeout(_ttl_timeout);
+        
+        if(!_storage.__jstorage_meta || typeof _storage.__jstorage_meta.TTL != "object"){
+            // nothing to do here
+            return;
+        }
+        
+        curtime = +new Date();
+        TTL = _storage.__jstorage_meta.TTL;
+        for(i in TTL){
+            if(TTL.hasOwnProperty(i)){
+                if(TTL[i] <= curtime){
+                    delete TTL[i];
+                    delete _storage[i];
+                    changed = true;
+                }else if(TTL[i] < nextExpire){
+                    nextExpire = TTL[i];
+                }
+            }
+        }
+        
+        // set next check
+        if(nextExpire != Infinity){
+            _ttl_timeout = setTimeout(_handleTTL, nextExpire - curtime);
+        }
+        
+        // save changes
+        if(changed){
+            _save();
+        }
     }
 
     ////////////////////////// PUBLIC INTERFACE /////////////////////////
 
     $.jStorage = {
         /* Version number */
-        version: "0.1.5.4",
+        version: "0.1.6.0",
 
         /**
          * Sets a key's value.
@@ -316,7 +363,48 @@
             _checkKey(key);
             if(key in _storage){
                 delete _storage[key];
+                // remove from TTL list
+                if(_storage.__jstorage_meta && 
+                  typeof _storage.__jstorage_meta.TTL == "object" &&
+                  key in _storage.__jstorage_meta.TTL){
+                    delete _storage.__jstorage_meta.TTL[key];
+                }
                 _save();
+                return true;
+            }
+            return false;
+        },
+        
+        /**
+         * Sets a TTL for a key, or remove it if ttl value is 0 or below
+         * 
+         * @param {String} key - key to set the TTL for
+         * @param {Number} ttl - TTL timeout in milliseconds
+         * @returns true if key existed or false if it didn't
+         */
+        setTTL: function(key, ttl){
+            var curtime = +new Date();
+            _checkKey(key);
+            ttl = Number(ttl) || 0;
+            if(key in _storage){
+                
+                if(!_storage.__jstorage_meta){
+                    _storage.__jstorage_meta = {};
+                }
+                if(!_storage.__jstorage_meta.TTL){
+                    _storage.__jstorage_meta.TTL = {};
+                }
+                
+                // Set TTL value for the key
+                if(ttl>0){
+                    _storage.__jstorage_meta.TTL[key] = curtime + ttl;
+                }else{
+                    delete _storage.__jstorage_meta.TTL[key];
+                }
+                
+                _save();
+                
+                _handleTTL();
                 return true;
             }
             return false;
@@ -325,7 +413,7 @@
         /**
          * Deletes everything in cache.
          * 
-         * @returns true
+         * @return true
          */
         flush: function(){
             _storage = {};
@@ -353,7 +441,7 @@
         index: function(){
             var index = [], i;
             for(i in _storage){
-                if(_storage.hasOwnProperty(i)){
+                if(_storage.hasOwnProperty(i) && i != "__jstorage_meta"){
                     index.push(i);
                 }
             }

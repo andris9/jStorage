@@ -14,7 +14,7 @@
 		</style>
 		
 		<script src="http://ajax.googleapis.com/ajax/libs/prototype/1.6.1.0/prototype.js"></script>
-		<script src="jstorage.js"></script>
+		<script src="jstorage.min.js"></script>
 		
 		<script>
 			JSOTRAGE_TEST = {
@@ -26,15 +26,20 @@
 				insert_value: function(){
 					var row = new Element("tr"),
 						key = $('key').value,
-						val = $('val').value;
+						val = $('val').value,
+						ttl = Number($('ttl').value) || 0;
 					if(!key){
 						alert("KEY NEEDS TO BE SET!");
 						$('key').focus();
 						return;
 					}
 					$.jStorage.set(key, val);
+					if(ttl>0){
+					    $.jStorage.setTTL(key, ttl);
+					}
 					$('key').value = "";
 					$('val').value = "";
+					$('ttl').value = "";
 					this.reDraw();
 				},
 			
@@ -65,12 +70,15 @@
 				 * @return
 				 */
 				reDraw: function(){
-					var row, del, indx=$.jStorage.index();
+					var row, del, indx=$.jStorage.index(), valuetd;
 					$$("tr[class~=rida]").each(function(c){c.remove();});
 					for(var i=0; i<indx.length; i++){
 						row = new Element("tr",{className:"rida"});
 						row.insert(new Element("td").update(indx[i]));
-						row.insert(new Element("td").update($.jStorage.get(indx[i])));
+						valuetd = new Element("td").update($.jStorage.get(indx[i]));
+						valuetd.setAttribute("colspan",2);
+						valuetd.colspan = 2;
+						row.insert(valuetd);
 						del = new Element("a",{href:"javascript:void(0)"}).update("DEL");
 						(function(i){
 							del.observe("click", function(){
@@ -97,25 +105,36 @@
 	
 	<table cellspacing="0" cellpadding="0" style="width: 100%">
 	<thead>
-		<tr><td width="120">KEY</td><td>VALUE</td><td width="50">&nbsp;</td></tr>
+		<tr>
+		  <td width="120">KEY</td>
+		  <td>VALUE</td>
+		  <td>TTL (ms)</td>
+		  <td width="50">&nbsp;</td>
+		 </tr>
 	</thead>
 	<tbody id="tulemused"></tbody>
 	<tfoot>
 		<tr>
 			<td><input type="text" id="key" name="key" value="" style="width: 110px;" /></td>
 			<td><input type="text" id="val" name="val" value="" style="width: 98%" /></td>
+			<td width="100"><input type="text" id="ttl" name="ttl" value="" style="width: 100px" /></td>
 			<td><a href="javascript:JSOTRAGE_TEST.insert_value()">ADD</a></td>
 		</tr>
 		<tr>
 			<td><input type="text" id="key2" name="key2" value="" style="width: 110px;" /></td>
-			<td>Clicking "GET" alerts the value for provided key with the method <em>$.jStorage.get(key)</em></td>
+			<td colspan="2">Clicking "GET" alerts the value for provided key with the method <em>$.jStorage.get(key)</em></td>
 			<td><a href="javascript:JSOTRAGE_TEST.get_value()">GET</a></td>
 		</tr>
 		<tr>
 			<td>&nbsp;</td>
-			<td>Clear all saved data</td>
+			<td colspan="2">Clear all saved data</td>
 			<td><a href="javascript:JSOTRAGE_TEST.flush_values()">FLUSH</a></td>
 		</tr>
+		<tr>
+            <td>&nbsp;</td>
+            <td colspan="2">Refresh to clear expired keys</td>
+            <td><a href="javascript:JSOTRAGE_TEST.reDraw()">REFRESH</a></td>
+        </tr>
 	</tfoot>
 	</table>
 	
