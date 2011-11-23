@@ -4,11 +4,6 @@ browser side and to replace the use of cookies for storing data.
 jStorage is able to save almost any kind of data (strings, numbers, objects, even XML nodes)
 only object methods and functions are left out.
 
-jStorage was first developed under the name of DOMCached (http://www.domcached.com) but since 
-a lot of features were dropped to make it simpler (like the support for namespaces and such) 
-it was renamed. DOMCached had separate files for working with Prototype and jQuery but jStorage 
-can handle both in one go.
-
 jStorage makes use of HTML5 local storage where available and userData behavior in 
 Internet Explorer older versions. Webkit SQLite is not supported.
 
@@ -20,5 +15,5 @@ be used by the script but nothing is actually stored.
  	
 jStorage is really small, just 2 kB when minified!
 
-Project homepage: http://www.jstorage.info
+Project homepage and docs: http://www.jstorage.info
 
