@@ -311,7 +311,7 @@
 
     $.jStorage = {
         /* Version number */
-        version: "0.1.6.0",
+        version: "0.1.6.1",
 
         /**
          * Sets a key's value.
@@ -326,6 +326,11 @@
             _checkKey(key);
             if(_XMLService.isXML(value)){
                 value = {_is_xml:true,xml:_XMLService.encode(value)};
+            }else if(typeof value == "function"){
+                value = null; // functions can't be saved!
+            }else if(value && typeof value == "object"){
+                // clone the object before saving to _storage tree
+                value = json_decode(json_encode(value));
             }
             _storage[key] = value;
             _save();
