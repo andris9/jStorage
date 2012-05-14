@@ -515,4 +515,4 @@
     // Initialize jStorage
     _init();
 
-})(window.jQuery || window.$);
+})(window.$ || window.jQuery);
