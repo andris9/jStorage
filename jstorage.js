@@ -35,7 +35,7 @@
  *
  * Methods:
  *
- * -set(key, value)
+ * -set(key, value[, options])
  * $.jStorage.set(key, value) -> saves a value
  *
  * -get(key[, default])
@@ -311,19 +311,24 @@
 
     $.jStorage = {
         /* Version number */
-        version: "0.1.6.1",
+        version: "0.1.7.0",
 
         /**
          * Sets a key's value.
          *
          * @param {String} key - Key to set. If this value is not set or not
          *              a string an exception is raised.
-         * @param value - Value to set. This can be any value that is JSON
+         * @param {Mixed} value - Value to set. This can be any value that is JSON
          *              compatible (Numbers, Strings, Objects etc.).
+         * @param {Object} [options] - possible options to use
+         * @param {Number} [options.TTL] - optional TTL value
          * @returns the used value
          */
-        set: function(key, value){
+        set: function(key, value, options){
             _checkKey(key);
+
+            options = options || {};
+
             if(_XMLService.isXML(value)){
                 value = {_is_xml:true,xml:_XMLService.encode(value)};
             }else if(typeof value == "function"){
@@ -333,7 +338,13 @@
                 value = json_decode(json_encode(value));
             }
             _storage[key] = value;
-            _save();
+
+            if(!isNaN(options.TTL)){
+                this.setTTL(key, options.TTL);
+                // also handles saving
+            }else{
+                _save();
+            }
             return value;
         },
 

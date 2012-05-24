@@ -33,10 +33,7 @@
 						$('key').focus();
 						return;
 					}
-					$.jStorage.set(key, val);
-					if(ttl>0){
-					    $.jStorage.setTTL(key, ttl);
-					}
+					$.jStorage.set(key, val, {TTL: ttl});
 					$('key').value = "";
 					$('val').value = "";
 					$('ttl').value = "";
