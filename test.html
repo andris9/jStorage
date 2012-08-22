@@ -80,7 +80,7 @@
 						(function(i){
 							del.observe("click", function(){
 								$.jStorage.deleteKey(i);
-								this.reDraw();
+								JSOTRAGE_TEST.reDraw();
 							});
 						}).call(this,indx[i])
 						row.insert(new Element("td").insert(del));
@@ -88,6 +88,10 @@
 					}
 				}
 			}
+
+			$.jStorage.listenKeyChange("testkey", function(key, action){
+				alert(key + " has been " + action);
+			});
 		</script>
 	</head>
 	<body>
@@ -135,6 +139,8 @@
 	</tfoot>
 	</table>
 	
+	<p><b>NB!</b> using key name "testkey" should fire an alertbox in every opened window on the same domain</p>
+
 	<p>&copy; 2010 Andris Reinman, <a href="mailto:andris.reinman@gmail.com">andris.reinman@gmail.com</a><br /><a href="http://www.jstorage.info">jStorage</a> is licensed under <a href="http://www.jstorage.info/static/license.txt">MIT-styled license</a>, so basically you can do whatever you want to do with it.</p>
 	
 	<script>
