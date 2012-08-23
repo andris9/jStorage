@@ -1,15 +1,12 @@
 # jStorage
 
-jStorage is a simple wrapper plugin for Prototype, MooTools and jQuery to store data on
-browser side and to replace the use of cookies for storing data.
+**jStorage** is a cross-browser key-value store database to store data locally in the browser - jStorage supports all major browsers, both in **desktop** (yes - even Internet Explorer 6) and in **mobile**.
 
-jStorage is able to save almost any kind of data (strings, numbers, objects, even XML nodes)
-only object methods and functions are left out.
+Additionally jStorage is library agnostic, it works well with any other JavaScript library on the same webpage, be it jQuery, Prototype, MooTools or something else. Though you still need to have either a third party library (Prototype, MooTools) or [JSON2](https://github.com/douglascrockford/JSON-js/blob/master/json2.js) on the page to support older IE versions.
 
-jStorage makes use of HTML5 local storage where available and userData behavior in 
-Internet Explorer older versions. Webkit SQLite is not supported.
+jStorage supports storing Strings, Numbers, JavaScript objects, Arrays and even native XML nodes which kind of makes it a JSON storage. jStorage also supports setting TTL values for auto expiring stored keys and - best of all - notifying other tabs/windows when a key has been changed, which makes jStorage also a local PubSub platform for web applications.
 
-jStorage is really small, just 2 kB when minified!
+jStorage is pretty small, about 8kB when minified.
 
 ## Donate
 

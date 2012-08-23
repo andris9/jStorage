@@ -27,7 +27,7 @@
  (function(){
     var
         /* jStorage version */
-        JSTORAGE_VERSION = "0.2.0",
+        JSTORAGE_VERSION = "0.2.1",
 
         /* detect a dollar object or create one if not found */
         $ = window.jQuery || window.$ || (window.$ = {}),
@@ -37,6 +37,7 @@
             parse:
                 window.JSON && (window.JSON.parse || window.JSON.decode) ||
                 String.prototype.evalJSON && function(str){return String(str).evalJSON();} ||
+                $.parseJSON ||
                 $.evalJSON,
             stringify:
                 window.JSON && (window.JSON.stringify || window.JSON.encode) ||
@@ -311,12 +312,11 @@
     function _checkUpdatedKeys(){
         var oldCrc32List = JSON.parse(JSON.stringify(_storage.__jstorage_meta.CRC32)),
             newCrc32List;
+
         _reloadData();
         newCrc32List = JSON.parse(JSON.stringify(_storage.__jstorage_meta.CRC32));
 
         var key,
-            crc32,
-            added = [],
             updated = [],
             removed = [];
 
@@ -519,9 +519,14 @@
 
             options = options || {};
 
+            // undefined values are deleted automatically
+            if(typeof value == "undefined"){
+                this.deleteKey(key);
+                return value;
+            }
+
             if(_XMLService.isXML(value)){
                 value = {_is_xml:true,xml:_XMLService.encode(value)};
-
             }else if(typeof value == "function"){
                 return undefined; // functions can't be saved!
             }else if(value && typeof value == "object"){
@@ -532,12 +537,7 @@
 
             _storage.__jstorage_meta.CRC32[key] = _crc32(JSON.stringify(value));
 
-            if(!isNaN(options.TTL)){
-                this.setTTL(key, options.TTL);
-                // also handles saving
-            }else{
-                _save();
-            }
+            this.setTTL(key, options.TTL || 0); // also handles saving
 
             _publishChange();
             _fireObservers(key, "updated");
@@ -621,6 +621,22 @@
                 return true;
             }
             return false;
+        },
+
+        /**
+         * Gets remaining TTL (in milliseconds) for a key or 0 when no TTL has been set
+         *
+         * @param {String} key Key to check
+         * @return {Number} Remaining TTL in milliseconds
+         */
+        getTTL: function(key){
+            var curtime = +new Date(), ttl;
+            _checkKey(key);
+            if(key in _storage && _storage.__jstorage_meta.TTL && _storage.__jstorage_meta.TTL[key]){
+                ttl = _storage.__jstorage_meta.TTL[key] - curtime;
+                return ttl || 0;
+            }
+            return 0;
         },
 
         /**
