@@ -272,7 +272,7 @@
             if("addEventListener" in window){
                 window.addEventListener("storage", _storageObserver, false);
             }else{
-                window.attachEvent("onstorage", _storageObserver);
+                document.attachEvent("onstorage", _storageObserver);
             }
         }else if(_backend == "userDataBehavior"){
             setInterval(_storageObserver, 1000);
