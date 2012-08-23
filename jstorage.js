@@ -751,7 +751,7 @@
          */
         reInit: function(){
             var new_storage_elm, data;
-            if(_storage_elm && _storage_elm.addBehavior){
+            if(_backend == "userDataBehavior"){
                 new_storage_elm = document.createElement('link');
 
                 _storage_elm.parentNode.replaceChild(new_storage_elm, _storage_elm);
