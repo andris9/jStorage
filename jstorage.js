@@ -27,7 +27,7 @@
  (function(){
     var
         /* jStorage version */
-        JSTORAGE_VERSION = "0.2.1",
+        JSTORAGE_VERSION = "0.2.2",
 
         /* detect a dollar object or create one if not found */
         $ = window.jQuery || window.$ || (window.$ = {}),
@@ -442,7 +442,7 @@
      * Removes expired keys
      */
     function _handleTTL(){
-        var curtime, i, TTL, nextExpire = Infinity, changed = false;
+        var curtime, i, TTL, CRC32, nextExpire = Infinity, changed = false, deleted = [];
 
         clearTimeout(_ttl_timeout);
 
@@ -453,12 +453,15 @@
 
         curtime = +new Date();
         TTL = _storage.__jstorage_meta.TTL;
+        CRC32 = _storage.__jstorage_meta.CRC32;
         for(i in TTL){
             if(TTL.hasOwnProperty(i)){
                 if(TTL[i] <= curtime){
                     delete TTL[i];
+                    delete CRC32[i];
                     delete _storage[i];
                     changed = true;
+                    deleted.push(i);
                 }else if(TTL[i] < nextExpire){
                     nextExpire = TTL[i];
                 }
@@ -473,6 +476,8 @@
         // save changes
         if(changed){
             _save();
+            _publishChange();
+            _fireObservers(deleted, "deleted");
         }
     }
 
