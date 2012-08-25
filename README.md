@@ -14,6 +14,15 @@ Support jStorage development
 
 [![Donate to author](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=DB26KWR2BQX5W)
 
+## Features
+
+jStorage supports the following features:
+
+  * store and retrieve data from browser storage using any JSON compatible data format (+ native XML nodes)
+  * set TTL values to stored keys for auto expiring
+  * listen for key changes (update, delete) from the current or any other browser window
+  * use any browser since IE6, both in desktop and in mobile
+
 ## Browser support
 
 Current availability: jStorage supports all major browsers - Internet Explorer 6+, Firefox 2+, 
