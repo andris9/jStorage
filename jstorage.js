@@ -3,7 +3,7 @@
  * Simple local storage wrapper to save data on the browser side, supporting
  * all major browsers - IE6+, Firefox2+, Safari4+, Chrome4+ and Opera 10.5+
  *
- * Copyright (c) 2010 Andris Reinman, andris.reinman@gmail.com
+ * Copyright (c) 2010 - 2012 Andris Reinman, andris.reinman@gmail.com
  * Project homepage: www.jstorage.info
  *
  * Licensed under MIT-style license:
@@ -27,7 +27,7 @@
  (function(){
     var
         /* jStorage version */
-        JSTORAGE_VERSION = "0.2.2",
+        JSTORAGE_VERSION = "0.2.3",
 
         /* detect a dollar object or create one if not found */
         $ = window.jQuery || window.$ || (window.$ = {}),
@@ -262,6 +262,9 @@
         }
 
         _load_storage();
+
+        // remove dead keys
+        _handleTTL();
     }
 
     /**
@@ -453,6 +456,7 @@
 
         curtime = +new Date();
         TTL = _storage.__jstorage_meta.TTL;
+
         CRC32 = _storage.__jstorage_meta.CRC32;
         for(i in TTL){
             if(TTL.hasOwnProperty(i)){
@@ -542,9 +546,8 @@
 
             _storage.__jstorage_meta.CRC32[key] = _crc32(JSON.stringify(value));
 
-            this.setTTL(key, options.TTL || 0); // also handles saving
+            this.setTTL(key, options.TTL || 0); // also handles saving and _publishChange
 
-            _publishChange();
             _fireObservers(key, "updated");
             return value;
         },
@@ -623,6 +626,8 @@
                 _save();
 
                 _handleTTL();
+
+                _publishChange();
                 return true;
             }
             return false;
@@ -755,29 +760,7 @@
          * Reloads the data from browser storage
          */
         reInit: function(){
-            var new_storage_elm, data;
-            if(_backend == "userDataBehavior"){
-                new_storage_elm = document.createElement('link');
-
-                _storage_elm.parentNode.replaceChild(new_storage_elm, _storage_elm);
-                _storage_elm = new_storage_elm;
-
-                /* Use a DOM element to act as userData storage */
-                _storage_elm.style.behavior = 'url(#default#userData)';
-
-                /* userData element needs to be inserted into the DOM! */
-                document.getElementsByTagName('head')[0].appendChild(_storage_elm);
-
-                _storage_elm.load("jStorage");
-                data = "{}";
-                try{
-                    data = _storage_elm.getAttribute("jStorage");
-                }catch(E5){}
-                _storage_service.jStorage = data;
-                _backend = "userDataBehavior";
-            }
-
-            _load_storage();
+            _reloadData();
         }
     };
 
