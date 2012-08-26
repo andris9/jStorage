@@ -27,7 +27,7 @@
  (function(){
     var
         /* jStorage version */
-        JSTORAGE_VERSION = "0.2.3",
+        JSTORAGE_VERSION = "0.2.4",
 
         /* detect a dollar object or create one if not found */
         $ = window.jQuery || window.$ || (window.$ = {}),
@@ -242,6 +242,15 @@
 
         // start listening for changes
         _setupObserver();
+
+        // handle cached navigation
+        if("addEventListener" in window){
+            window.addEventListener("pageshow", function(event){
+                if(event.persisted){
+                    _storageObserver();
+                }
+            }, false);
+        }
     }
 
     function _reloadData(){
