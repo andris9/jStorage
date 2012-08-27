@@ -14,7 +14,7 @@
 		</style>
 		
 		<script src="http://ajax.googleapis.com/ajax/libs/prototype/1.6.1.0/prototype.js"></script>
-		<script src="jstorage.js"></script>
+		<script src="jstorage.min.js"></script>
 		
 		<script>
 			JSOTRAGE_TEST = {
@@ -33,7 +33,10 @@
 						$('key').focus();
 						return;
 					}
-					$.jStorage.set(key, val, {TTL: ttl});
+					$.jStorage.set(key, val);
+					if(ttl>0){
+					    $.jStorage.setTTL(key, ttl);
+					}
 					$('key').value = "";
 					$('val').value = "";
 					$('ttl').value = "";
@@ -89,8 +92,17 @@
 				}
 			}
 
-			$.jStorage.listenKeyChange("testkey", function(key, action){
-				alert(key + " has been " + action);
+			$.jStorage.listenKeyChange("test", function(key, action){
+				JSOTRAGE_TEST.reDraw();
+				alert(key+" "+action+" ("+$.jStorage.get(key, "~~")+")");
+			});
+
+			var hasFocus = false;
+			$.jStorage.subscribe("valchange", function(channel, payload){
+				if(window.hasFocus){
+					return;
+				}
+				$("val").value = payload;
 			});
 		</script>
 	</head>
@@ -117,7 +129,7 @@
 	<tfoot>
 		<tr>
 			<td><input type="text" id="key" name="key" value="" style="width: 110px;" /></td>
-			<td><input type="text" id="val" name="val" value="" style="width: 98%" /></td>
+			<td><input type="text" id="val" name="val" value="" style="width: 98%" onblur="window.hasFocus=false;" onfocus="window.hasFocus=true;" onkeyup="$.jStorage.publish('valchange', this.value);" onchange="$.jStorage.publish('valchange', this.value);"/></td>
 			<td width="100"><input type="text" id="ttl" name="ttl" value="" style="width: 100px" /></td>
 			<td><a href="javascript:JSOTRAGE_TEST.insert_value()">ADD</a></td>
 		</tr>
@@ -139,9 +151,10 @@
 	</tfoot>
 	</table>
 	
-	<p><b>NB!</b> using key name "testkey" should fire an alertbox in every opened window on the same domain</p>
+	<p><b>NB!</b> Key "test" has a special meaning - if it is updated or deleted, all open windows of the same page will alert the change.</p>
 
-	<p>&copy; 2010 - 2012 Andris Reinman, <a href="mailto:andris.reinman@gmail.com">andris.reinman@gmail.com</a><br /><a href="http://www.jstorage.info">jStorage</a> is licensed under <a href="http://www.jstorage.info/static/license.txt">MIT-styled license</a>, so basically you can do whatever you want to do with it.</p>
+<p id="moot"></p>
+	<p id="footer">&copy; 2010 - 2012 Andris Reinman, <a href="mailto:andris.reinman@gmail.com">andris.reinman@gmail.com</a><br /><a href="http://www.jstorage.info">jStorage</a> is licensed under <a href="http://www.jstorage.info/static/license.txt">MIT-styled license</a>, so basically you can do whatever you want to do with it.</p>
 	
 	<script>
 		// Fill the table with previously saved data

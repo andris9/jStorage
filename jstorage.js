@@ -27,10 +27,10 @@
  (function(){
     var
         /* jStorage version */
-        JSTORAGE_VERSION = "0.2.4",
+        JSTORAGE_VERSION = "0.2.5",
 
         /* detect a dollar object or create one if not found */
-        $ = window.jQuery || window.$ || (window.$ = {}),
+        $ = window.jQuery || window.$ || (window.$ = {}),
 
         /* check for a JSON handling support */
         JSON = {
@@ -40,8 +40,8 @@
                 $.parseJSON ||
                 $.evalJSON,
             stringify:
-                window.JSON && (window.JSON.stringify || window.JSON.encode) ||
                 Object.toJSON ||
+                window.JSON && (window.JSON.stringify || window.JSON.encode) ||
                 $.toJSON
         };
 
@@ -70,10 +70,16 @@
         _observers = {},
 
         /* timeout to wait after onchange event */
-        _observerTimeout = false,
+        _observer_timeout = false,
 
         /* last update time */
-        _observerUpdate = 0,
+        _observer_update = 0,
+
+        /* pubsub observers */
+        _pubsub_observers = {},
+
+        /* skip published items older than current timestamp */
+        _pubsub_last = +new Date(), 
 
         /* Next check for TTL */
         _ttl_timeout,
@@ -191,7 +197,7 @@
                 if(window.localStorage) {
                     _storage_service = window.localStorage;
                     _backend = "localStorage";
-                    _observerUpdate = _storage_service.jStorage_update;
+                    _observer_update = _storage_service.jStorage_update;
                 }
             } catch(E3) {/* Firefox fails when touching localStorage and cookies are disabled */}
         }
@@ -201,7 +207,7 @@
                 if(window.globalStorage) {
                     _storage_service = window.globalStorage[window.location.hostname];
                     _backend = "globalStorage";
-                    _observerUpdate = _storage_service.jStorage_update;
+                    _observer_update = _storage_service.jStorage_update;
                 }
             } catch(E4) {/* Firefox fails when touching localStorage and cookies are disabled */}
         }
@@ -224,7 +230,7 @@
                 }catch(E5){}
 
                 try{
-                    _observerUpdate = _storage_elm.getAttribute("jStorage_update");
+                    _observer_update = _storage_elm.getAttribute("jStorage_update");
                 }catch(E6){}
 
                 _storage_service.jStorage = data;
@@ -242,6 +248,8 @@
 
         // start listening for changes
         _setupObserver();
+
+        _handlePubSub();
 
         // handle cached navigation
         if("addEventListener" in window){
@@ -264,7 +272,7 @@
             }catch(E5){}
 
             try{
-                _observerUpdate = _storage_elm.getAttribute("jStorage_update");
+                _observer_update = _storage_elm.getAttribute("jStorage_update");
             }catch(E6){}
 
             _storage_service.jStorage = data;
@@ -274,6 +282,8 @@
 
         // remove dead keys
         _handleTTL();
+
+        _handlePubSub();
     }
 
     /**
@@ -298,8 +308,8 @@
     function _storageObserver(){
         var updateTime;
         // cumulate change notifications with timeout
-        clearTimeout(_observerTimeout);
-        _observerTimeout = setTimeout(function(){
+        clearTimeout(_observer_timeout);
+        _observer_timeout = setTimeout(function(){
 
             if(_backend == "localStorage" || _backend == "globalStorage"){
                 updateTime = _storage_service.jStorage_update;
@@ -310,12 +320,12 @@
                 }catch(E5){}
             }
 
-            if(updateTime && updateTime != _observerUpdate){
-                _observerUpdate = updateTime;
+            if(updateTime && updateTime != _observer_update){
+                _observer_update = updateTime;
                 _checkUpdatedKeys();
             }
 
-        }, 100);
+        }, 25);
     }
 
     /**
@@ -424,6 +434,7 @@
      * This functions provides the "save" mechanism to store the jStorage object
      */
     function _save(){
+        _dropOldEvents(); // remove expired events
         try{
             _storage_service.jStorage = JSON.stringify(_storage);
             // If userData is used as the storage engine, additional
@@ -492,6 +503,86 @@
             _publishChange();
             _fireObservers(deleted, "deleted");
         }
+    }
+
+    /**
+     * Checks if there's any events on hold to be fired to listeners
+     */
+    function _handlePubSub(){
+        if(!_storage.__jstorage_meta.PubSub){
+            return;
+        }
+        var pubelm,
+            _pubsubCurrent = _pubsub_last;
+
+        for(var i=len=_storage.__jstorage_meta.PubSub.length-1; i>=0; i--){
+            pubelm = _storage.__jstorage_meta.PubSub[i];
+            if(pubelm[0] > _pubsub_last){
+                _pubsubCurrent = pubelm[0];
+                _fireSubscribers(pubelm[1], pubelm[2]);
+            }
+        }
+
+        _pubsub_last = _pubsubCurrent;
+    }
+
+    /**
+     * Fires all subscriber listeners for a pubsub channel
+     *
+     * @param {String} channel Channel name
+     * @param {Mixed} payload Payload data to deliver
+     */
+    function _fireSubscribers(channel, payload){
+        if(_pubsub_observers[channel]){
+            for(var i=0, len = _pubsub_observers[channel].length; i<len; i++){
+                // send immutable data that can't be modified by listeners
+                _pubsub_observers[channel][i](channel, JSON.parse(JSON.stringify(payload)));
+            }
+        }
+    }
+
+    /**
+     * Remove old events from the publish stream (at least 2sec old)
+     */
+    function _dropOldEvents(){
+        if(!_storage.__jstorage_meta.PubSub){
+            return;
+        }
+
+        var retire = +new Date() - 2000;
+
+        for(var i=0, len = _storage.__jstorage_meta.PubSub.length; i<len; i++){
+            if(_storage.__jstorage_meta.PubSub[i][0] <= retire){
+                // deleteCount is needed for IE6
+                _storage.__jstorage_meta.PubSub.splice(i, _storage.__jstorage_meta.PubSub.length - i);
+                break;
+            }
+        }
+
+        if(!_storage.__jstorage_meta.PubSub.length){
+            delete _storage.__jstorage_meta.PubSub;
+        }
+
+    }
+
+    /**
+     * Publish payload to a channel
+     *
+     * @param {String} channel Channel name
+     * @param {Mixed} payload Payload to send to the subscribers
+     */
+    function _publish(channel, payload){
+        if(!_storage.__jstorage_meta){
+            _storage.__jstorage_meta = {};
+        }
+        if(!_storage.__jstorage_meta.PubSub){
+            _storage.__jstorage_meta.PubSub = [];
+        }
+        
+        _storage.__jstorage_meta.PubSub.unshift([+new Date, channel, payload]);
+
+        _save();
+        _publishChange();
     }
 
     /**
@@ -763,6 +854,38 @@
                     _observers[key].splice(i,1);
                 }
             }
+        },
+
+        /**
+         * Subscribe to a Publish/Subscribe event stream
+         *
+         * @param {String} channel Channel name
+         * @param {Function} callback Function to run when the something is published to the channel
+         */
+        subscribe: function(channel, callback){
+            channel = (channel || "").toString();
+            if(!channel){
+                throw new TypeError('Channel not defined');
+            }
+            if(!_pubsub_observers[channel]){
+                _pubsub_observers[channel] = [];
+            }
+            _pubsub_observers[channel].push(callback);
+        },
+
+        /**
+         * Publish data to an event stream
+         *
+         * @param {String} channel Channel name
+         * @param {Mixed} payload Payload to deliver
+         */
+        publish: function(channel, payload){
+            channel = (channel || "").toString();
+            if(!channel){
+                throw new TypeError('Channel not defined');
+            }
+
+            _publish(channel, payload);
         },
 
         /**
