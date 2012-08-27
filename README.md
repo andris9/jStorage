@@ -20,6 +20,7 @@ jStorage supports the following features:
 
   * store and retrieve data from browser storage using any JSON compatible data format (+ native XML nodes)
   * set TTL values to stored keys for auto expiring
+  * publish and subscribe to cross-window/tab events
   * listen for key changes (update, delete) from the current or any other browser window
   * use any browser since IE6, both in desktop and in mobile
 
