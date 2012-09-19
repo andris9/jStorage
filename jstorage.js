@@ -27,7 +27,7 @@
  (function(){
     var
         /* jStorage version */
-        JSTORAGE_VERSION = "0.2.5",
+        JSTORAGE_VERSION = "0.3.0",
 
         /* detect a dollar object or create one if not found */
         $ = window.jQuery || window.$ || (window.$ = {}),
@@ -171,7 +171,10 @@
                 resultXML = dom_parser.call("DOMParser" in window && (new DOMParser()) || window, xmlString, 'text/xml');
                 return this.isXML(resultXML)?resultXML:false;
             }
-        };
+        },
+
+        _localStoragePolyfillSetKey = function(){},
+        _localStoragePolyfillFlush = function(){};
 
     ////////////////////////// PRIVATE METHODS ////////////////////////
 
@@ -246,6 +249,8 @@
         // remove dead keys
         _handleTTL();
 
+        _handleLocalStoragePolyfill();
+
         // start listening for changes
         _setupObserver();
 
@@ -258,6 +263,68 @@
                     _storageObserver();
                 }
             }, false);
+        }
+    }
+
+    function _handleLocalStoragePolyfill(forceCreate){
+        var _skipSave = false;
+        if(!forceCreate && typeof window.localStorage != "undefined"){
+            return;
+        }
+
+        if(window.globalStorage){
+            localStorage = window.globalStorage[window.location.hostname];
+            return;
+        }
+
+        if("attachEvent" in document){
+            var i;
+
+            if(window.localStorage && window.localStorage.parentNode){
+                localStorage.parentNode.removeChild(localStorage);
+            }
+
+            localStorage = document.createElement("button");
+            document.getElementsByTagName('head')[0].appendChild(localStorage);
+            
+            for(i in _storage){
+                if(_storage.hasOwnProperty(i) && i != "__jstorage_meta"){
+                    localStorage[i] = _storage[i];
+                }
+            }
+
+            localStorage.setItem = function(key, value){
+                localStorage[key] = value;
+            }
+
+            localStorage.getItem = function(key){
+                return $.jStorage.get(key);
+            }
+
+            localStorage.removeItem = function(key){
+                return $.jStorage.deleteKey(key);
+            }
+
+            localStorage.clear = function(){
+                $.jStorage.flush();
+            }
+
+            _localStoragePolyfillFlush = function(){
+                _handleLocalStoragePolyfill(true);
+            }
+
+            _localStoragePolyfillSetKey = function(key, value){
+                _skipSave = true;
+                localStorage[key] = value;
+                _skipSave = false;
+            }
+
+            localStorage.attachEvent("onpropertychange", function(e){
+                if(_skipSave){
+                    return;
+                }
+                $.jStorage.set(e.propertyName, localStorage[e.propertyName]);
+            });
         }
     }
 
@@ -648,6 +715,8 @@
 
             this.setTTL(key, options.TTL || 0); // also handles saving and _publishChange
 
+            _localStoragePolyfillSetKey(key, value);
+
             _fireObservers(key, "updated");
             return value;
         },
@@ -690,6 +759,7 @@
                 }
 
                 delete _storage.__jstorage_meta.CRC32[key];
+                _localStoragePolyfillSetKey(key, "undefined");
 
                 _save();
                 _publishChange();
@@ -756,6 +826,7 @@
          */
         flush: function(){
             _storage = {__jstorage_meta:{CRC32:{}}};
+            _localStoragePolyfillFlush();
             _save();
             _publishChange();
             _fireObservers(null, "flushed");

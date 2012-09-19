@@ -14,7 +14,7 @@
 		</style>
 		
 		<script src="http://ajax.googleapis.com/ajax/libs/prototype/1.6.1.0/prototype.js"></script>
-		<script src="jstorage.min.js"></script>
+		<script src="jstorage.js"></script>
 		
 		<script>
 			JSOTRAGE_TEST = {
@@ -104,6 +104,22 @@
 				}
 				$("val").value = payload;
 			});
+		</script>
+		<script>
+			setTimeout(function(){
+			    alert(localStorage.a);
+			    localStorage.a = Number(localStorage.a || 124) + 1;
+			    localStorage.setItem("b", Number(localStorage.b || 324) + 1);
+			    alert(localStorage.getItem("b"));
+
+			    if(localStorage.a > 130){
+			    	localStorage.clear();
+			    }
+
+			    if(localStorage.b > 326){
+			    	localStorage.removeItem("b");
+			    }
+			}, 300);
 		</script>
 	</head>
 	<body>
