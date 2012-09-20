@@ -42,7 +42,7 @@ be used by the script but nothing is actually stored.
 
 ## Tests
 
-See [tests/testrunner.html](http://tahvel.info/jStorage/tests/testrunner.html) for unit tests
+See [tests/testrunner.html](http://www.jstorage.info/static/tests/testrunner.html) for unit tests
 
 **NB!** - listenKeyChange and publish/subscribe tests tend to fail sometimes in Internet Explorer, which should be ok.
 
