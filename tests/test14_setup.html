@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="http://ajax.googleapis.com/ajax/libs/prototype/1.6.1.0/prototype.js"></script>
+    <script src="../jstorage.js"></script>
+    <script>
+        var xmlhttp;
+
+        if (window.XMLHttpRequest){
+            xmlhttp = new XMLHttpRequest();
+        }else{
+            xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+        }
+
+        xmlhttp.onreadystatechange=function(){
+            if(xmlhttp.readyState==4 && xmlhttp.status==200){
+                $.jStorage.set("jskey_xml", xmlhttp.responseXML);
+                parent.setupReady();
+            }
+        }
+        xmlhttp.open("GET","data.xml",true);
+        xmlhttp.send();
+        
+    </script>
+</head>
+<body>
+
+</body>
+</html>

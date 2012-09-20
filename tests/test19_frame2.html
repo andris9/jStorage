@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="http://ajax.googleapis.com/ajax/libs/prototype/1.6.1.0/prototype.js"></script>
+    <script src="../jstorage.js"></script>
+    <script>
+        var done = false;
+        $.jStorage.listenKeyChange("test", function(key){
+            if(done)return;
+
+            if($.jStorage.get("test") == "pest"){
+                parent.listenReady(false);
+                done = true
+            }else if($.jStorage.get("test") == "vest"){
+                parent.listenReady(true);
+                done = true;
+            }
+        });
+
+        parent.iframeReady(2, window);
+    </script>
+</head>
+<body>
+
+</body>
+</html>

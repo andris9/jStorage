@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="http://ajax.googleapis.com/ajax/libs/prototype/1.6.1.0/prototype.js"></script>
+    <script src="../jstorage.js"></script>
+    <script>
+        if(!parent.sessionStorage.keyname){
+            parent.testReady(false);
+        }else{
+            parent.sessionStorage.removeItem("keyname")
+            parent.testReady(!parent.sessionStorage.keyname);
+        }
+    </script>
+</head>
+<body>
+
+</body>
+</html>

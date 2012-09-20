@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="http://ajax.googleapis.com/ajax/libs/prototype/1.6.1.0/prototype.js"></script>
+    <script src="../jstorage.js"></script>
+    <script>
+        function runTest(){
+            
+            var keys = {
+                keyname1: true, 
+                keyname2: true, 
+                keyname3: true},
+                existing = {};
+
+            parent.sessionStorage.removeItem("jStorage");
+            parent.sessionStorage.removeItem("jStorage_update");
+
+            for(var i=0; i<parent.sessionStorage.length; i++){
+                
+                if(!keys[parent.sessionStorage.key(i)]){
+                    return false;
+                }
+
+                existing[parent.sessionStorage.key(i)] = true;
+            }
+
+            for(var i in keys){
+                if(keys.hasOwnProperty(i) && !existing[i]){
+                    return false;
+                }
+            }
+            return true;
+        }
+        parent.testReady(runTest());
+    </script>
+</head>
+<body>
+
+</body>
+</html>

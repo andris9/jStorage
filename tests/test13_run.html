@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="http://ajax.googleapis.com/ajax/libs/prototype/1.6.1.0/prototype.js"></script>
+    <script src="../jstorage.js"></script>
+    <script>
+
+        function runTest(){
+            if(typeof $.jStorage.get("jskey_str") != "string" || $.jStorage.get("jskey_str") !== "stringval"){
+                return false;
+            }
+            if(typeof $.jStorage.get("jskey_num") != "number" || $.jStorage.get("jskey_num") !== 12345){
+                return false;
+            }
+            if(typeof $.jStorage.get("jskey_bool") != "boolean" || $.jStorage.get("jskey_bool") !== false){
+                return false;
+            }
+            if(typeof $.jStorage.get("jskey_obj") != "object" || $.jStorage.get("jskey_obj").test !== 123){
+                return false;
+            }
+
+            return true;
+        }
+        parent.testReady(runTest());
+    </script>
+</head>
+<body>
+
+</body>
+</html>

@@ -6,7 +6,11 @@ Additionally jStorage is library agnostic, it works well with any other JavaScri
 
 jStorage supports storing Strings, Numbers, JavaScript objects, Arrays and even native XML nodes which kind of makes it a JSON storage. jStorage also supports setting TTL values for auto expiring stored keys and - best of all - notifying other tabs/windows when a key has been changed, which makes jStorage also a local PubSub platform for web applications.
 
-jStorage is pretty small, about 8kB when minified.
+jStorage is pretty small, about 10kB when minified, 4kB gzipped.
+
+If jStorage is loaded on the page localStorage and sessionStorage polyfills are added to IE6 and IE7 in addition to regular $.jStorage methods. 
+You can use regular setItem/getItem
+methods with the polyfills but getter/setters can be used as well - <code>localStorage.mykey = myval;</code> is absolutely valid with jStorage. The only downside is that you can't use <em>onstorage</em> event, you need to fall back to <em>listenKeyChange</em> instead.
 
 ## Donate
 
@@ -31,6 +35,12 @@ Safari 4+, Chrome 4+, Opera 10.50+
 
 If the browser doesn't support data caching, then no exceptions are raised - jStorage can still 
 be used by the script but nothing is actually stored.
+
+## Tests
+
+See [tests/testrunner.html](http://tahvel.info/jStorage/tests/testrunner.html) for unit tests
+
+**NB!** - listenKeyChange and publish/subscribe tests tend to fail sometimes in Internet Explorer, which should be ok.
 
 ## Docs
 

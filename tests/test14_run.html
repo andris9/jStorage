@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="http://ajax.googleapis.com/ajax/libs/prototype/1.6.1.0/prototype.js"></script>
+    <script src="../jstorage.js"></script>
+    <script>
+
+        function runTest(){
+
+            try{
+                if($.jStorage.get("jskey_xml").getElementsByTagName("title")[0].firstChild.nodeValue != "Pealkiri"){
+                    return false;
+                }
+            }catch(E){
+                return false;
+            }
+
+            return true;
+        }
+        parent.testReady(runTest());
+    </script>
+</head>
+<body>
+
+</body>
+</html>

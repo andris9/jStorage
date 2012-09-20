@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="http://ajax.googleapis.com/ajax/libs/prototype/1.6.1.0/prototype.js"></script>
+    <script src="../jstorage.js"></script>
+    <script>
+        function runTest(){
+            
+            parent.sessionStorage.removeItem("jStorage");
+            parent.sessionStorage.removeItem("jStorage_update");
+
+            if(parent.sessionStorage.length != 3){
+                alert(parent.sessionStorage.length)
+                return false;
+            }
+            parent.sessionStorage.setItem("keyname3", "mull");
+            parent.sessionStorage.setItem("keyname4", "mull");
+            if(parent.sessionStorage.length != 4){
+                return false;
+            }
+            parent.sessionStorage.removeItem("keyname3");
+            return parent.sessionStorage.length == 3;
+        }
+        parent.testReady(runTest());
+    </script>
+</head>
+<body>
+
+</body>
+</html>

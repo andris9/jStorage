@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="http://ajax.googleapis.com/ajax/libs/prototype/1.6.1.0/prototype.js"></script>
+    <script src="../jstorage.js"></script>
+    <script>
+
+        var received = {}, done = false;
+
+        $.jStorage.subscribe("test", function(channel, payload){
+            if(done)return;
+
+            received[payload] = true;
+            
+            if(received["pest1"] && received["pest2"]){
+                done = true;
+                parent.listenReady(true);
+            }
+        });
+
+        parent.iframeReady(2, window);
+    </script>
+</head>
+<body>
+
+</body>
+</html>

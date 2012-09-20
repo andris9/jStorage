@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="http://ajax.googleapis.com/ajax/libs/prototype/1.6.1.0/prototype.js"></script>
+    <script src="../jstorage.js"></script>
+    <script>
+
+        var iframe1 = document.createElement("iframe");
+        iframe1.src = "test19_frame1.html";
+
+        var iframe2 = document.createElement("iframe");
+        iframe2.src = "test19_frame2.html";
+
+        var ready = {};
+
+        function iframeReady(nr, win){
+            ready["iframe"+nr] = win;
+
+            if(ready.iframe1 && ready.iframe2){
+                ready.iframe1.go();
+            }
+        }
+
+        function listenReady(success){
+            parent.testReady(!!success);
+        }
+
+    </script>
+</head>
+<body>
+
+<script>
+    document.body.appendChild(iframe1);
+    document.body.appendChild(iframe2);
+</script>
+</body>
+</html>

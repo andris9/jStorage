@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="http://ajax.googleapis.com/ajax/libs/prototype/1.6.1.0/prototype.js"></script>
+    <script src="../jstorage.js"></script>
+    <script>
+
+        function runTest(){
+
+            if($.jStorage.get("delkey") != "delval"){
+                return false;
+            }
+
+            if($.jStorage.get("nodelkey") != "nodelval"){
+                return false;
+            }
+            
+            if($.jStorage.index().length != 2){
+                return false;
+            }
+
+            $.jStorage.flush();
+
+            if($.jStorage.get("delkey")){
+                return false;
+            }
+
+            if($.jStorage.get("nodelkey")){
+                return false;
+            }
+
+            if($.jStorage.index().length){
+                return false;
+            }
+
+            return true;
+        }
+        parent.testReady(runTest());
+    </script>
+</head>
+<body>
+
+</body>
+</html>

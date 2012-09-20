@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="http://ajax.googleapis.com/ajax/libs/prototype/1.6.1.0/prototype.js"></script>
+    <script src="../jstorage.js"></script>
+    <script>
+        function runTest(){
+
+            localStorage.clear();
+            
+            localStorage.removeItem("jStorage");
+            localStorage.removeItem("jStorage_update");
+
+            return !localStorage.length && !localStorage.keyname1;
+        }
+        parent.testReady(runTest());
+    </script>
+</head>
+<body>
+
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="http://ajax.googleapis.com/ajax/libs/prototype/1.6.1.0/prototype.js"></script>
+    <script src="../jstorage.js"></script>
+    <script>
+
+        function runTest(){
+
+            if($.jStorage.get("ttlkey") != "ttlval"){
+
+                parent.testReady(false);
+            }
+            
+            var interval = setInterval(function(){
+                if(!$.jStorage.get("ttlkey")){
+                    clearInterval(interval);
+                    parent.testReady(true);
+                }
+            }, 100)
+        }
+        runTest()
+    </script>
+</head>
+<body>
+
+</body>
+</html>
