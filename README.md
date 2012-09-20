@@ -10,7 +10,11 @@ jStorage is pretty small, about 10kB when minified, 4kB gzipped.
 
 If jStorage is loaded on the page localStorage and sessionStorage polyfills are added to IE6 and IE7 in addition to regular $.jStorage methods. 
 You can use regular setItem/getItem
-methods with the polyfills but getter/setters can be used as well - <code>localStorage.mykey = myval;</code> is absolutely valid with jStorage. The only downside is that you can't use <em>onstorage</em> event, you need to fall back to <em>listenKeyChange</em> instead.
+methods with the polyfills but getter/setters can be used as well:
+
+    localStorage.mykey = myval;
+
+is absolutely valid with jStorage. The only downside is that you can't use *onstorage* event, you need to fall back to *listenKeyChange* instead.
 
 ## Donate
 
