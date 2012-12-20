@@ -10,7 +10,7 @@ Homepage: http://www.jstorage.info/
 
 Package: libjs-jstorage
 Architecture: all
-Recommends: libjs-jquery
+Recommends: libjs-jquery, libjs-prototype
 Description: store data locally with JavaScript
  Storage is a cross-browser key-value store database to store data locally
  in the browser - jStorage supports all major browsers, both in desktop
