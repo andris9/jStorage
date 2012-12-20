@@ -1,0 +1,20 @@
+#!/usr/bin/make -f
+
+include /usr/share/cdbs/1/rules/debhelper.mk
+
+clean::
+	rm -fr build
+
+build/stamp:
+	mkdir -p build
+	touch $@
+
+build/libjs-jstorage:: build/stamp
+	install -m 0644 jstorage.js build/
+	yui-compressor --type js \
+		--charset utf-8 \
+		--nomunge \
+		--disable-optimizations \
+		--preserve-semi \
+		build/jstorage.js -o build/jstorage.min.js
+	sed 's/"jstorage.js"/"jstorage.min.js"/' test.html > build/test.min.html
