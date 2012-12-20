@@ -1,0 +1,33 @@
+#!/usr/bin/make -f
+
+include /usr/share/cdbs/1/rules/debhelper.mk
+
+package	:= $(shell dpkg-parsechangelog|grep ^Source|awk '{print $$2}')
+version	:= $(shell dpkg-parsechangelog|grep ^Version|awk '{print $$2}' \
+	|sed 's/-[[:digit:]]\+$$//')
+
+clean::
+	rm -fr build
+
+build/stamp:
+	mkdir -p build
+	touch $@
+
+build/libjs-jstorage:: build/stamp
+	install -m 0644 jstorage.js build/
+	yui-compressor --type js \
+		--charset utf-8 \
+		--nomunge \
+		--disable-optimizations \
+		--preserve-semi \
+		build/jstorage.js -o build/jstorage.min.js
+	sed 's/"jstorage.js"/"jstorage.min.js"/' test.html > build/test.min.html
+	sed 's/jstorage.js"/jstorage.min.js"/' tests/testrunner.html \
+				 > build/testrunner.min.html
+
+tarball: clean
+	test -d ../$(package)-$(version)
+	cd .. && \
+	tar --exclude=.git --exclude=debian \
+		-czvf $(package)_$(version).orig.tar.gz \
+		$(package)-$(version)

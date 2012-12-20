@@ -1,0 +1,18 @@
+Source: libjs-jstorage
+Maintainer: Dmitry E. Oboukhov <unera@debian.org>
+Section: web
+Priority: optional
+Build-Depends:  debhelper (>= 8),
+ cdbs,
+ yui-compressor
+Standards-Version: 3.9.3
+Homepage: http://www.jstorage.info/
+
+Package: libjs-jstorage
+Architecture: all
+Depends:  ${misc:Depends}, ${shlibs:Depends}
+Recommends: libjs-jquery, libjs-prototype
+Description: store data locally with JavaScript
+ Storage is a cross-browser key-value store database to store data locally
+ in the browser - jStorage supports all major browsers, both in desktop
+ and in mobile.

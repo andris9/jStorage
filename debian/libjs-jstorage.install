@@ -1,0 +1,6 @@
+build/jstorage.min.js /usr/share/javascript/jstorage/
+build/jstorage.js /usr/share/javascript/jstorage/
+test.html /usr/share/doc/libjs-jstorage/examples
+build/test.min.html /usr/share/doc/libjs-jstorage/examples
+tests /usr/share/doc/libjs-jstorage/examples
+build/testrunner.min.html /usr/share/doc/libjs-jstorage/examples/tests/
