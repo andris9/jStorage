@@ -79,7 +79,7 @@
         _pubsub_observers = {},
 
         /* skip published items older than current timestamp */
-        _pubsub_last = +new Date(), 
+        _pubsub_last = +new Date(),
 
         /* Next check for TTL */
         _ttl_timeout,
@@ -256,7 +256,7 @@
     function _createPolyfillStorage(type, forceCreate){
         var _skipSave = false,
             _length = 0,
-            i, 
+            i,
             storage,
             storage_source = {};
 
@@ -272,7 +272,7 @@
             return;
         }
 
-        // only IE6/7 from this point on 
+        // only IE6/7 from this point on
         if(_backend != "userDataBehavior"){
             return;
         }
@@ -300,7 +300,7 @@
                 storage[i] = storage_source[i];
             }
         }
-        
+
         // Polyfill API
 
         /**
@@ -310,7 +310,7 @@
 
         /**
          * Returns the key of the nth stored value
-         * 
+         *
          * @param {Number} n Index position
          * @return {String} Key name of the nth stored value
          */
@@ -345,7 +345,7 @@
          * Sets or updates value for a give key
          *
          * @param {String} key Key name to be updated
-         * @param {String} value String value to be stored 
+         * @param {String} value String value to be stored
          */
         storage.setItem = function(key, value){
             if(typeof value == "undefined"){
@@ -365,7 +365,7 @@
             }
 
             storage[key] = undefined;
-            
+
             _skipSave = true;
             if(key in storage){
                 storage.removeAttribute(key);
@@ -783,7 +783,7 @@
         if(!_storage.__jstorage_meta.PubSub){
             _storage.__jstorage_meta.PubSub = [];
         }
-        
+
         _storage.__jstorage_meta.PubSub.unshift([+new Date, channel, payload]);
 
         _save();
@@ -795,12 +795,12 @@
      * JS Implementation of MurmurHash2
      *
      *  SOURCE: https://github.com/garycourt/murmurhash-js (MIT licensed)
-     * 
+     *
      * @author <a href="mailto:gary.court@gmail.com">Gary Court</a>
      * @see http://github.com/garycourt/murmurhash-js
      * @author <a href="mailto:aappleby@gmail.com">Austin Appleby</a>
      * @see http://sites.google.com/site/murmurhash/
-     * 
+     *
      * @param {string} str ASCII only
      * @param {number} seed Positive integer only
      * @return {number} 32-bit positive integer hash
@@ -812,14 +812,14 @@
             h = seed ^ l,
             i = 0,
             k;
-      
+
         while (l >= 4) {
-            k = 
+            k =
                 ((str.charCodeAt(i) & 0xff)) |
                 ((str.charCodeAt(++i) & 0xff) << 8) |
                 ((str.charCodeAt(++i) & 0xff) << 16) |
                 ((str.charCodeAt(++i) & 0xff) << 24);
-        
+
             k = (((k & 0xffff) * 0x5bd1e995) + ((((k >>> 16) * 0x5bd1e995) & 0xffff) << 16));
             k ^= k >>> 24;
             k = (((k & 0xffff) * 0x5bd1e995) + ((((k >>> 16) * 0x5bd1e995) & 0xffff) << 16));
@@ -829,7 +829,7 @@
             l -= 4;
             ++i;
         }
-      
+
         switch (l) {
             case 3: h ^= (str.charCodeAt(i + 2) & 0xff) << 16;
             case 2: h ^= (str.charCodeAt(i + 1) & 0xff) << 8;
@@ -903,9 +903,7 @@
         get: function(key, def){
             _checkKey(key);
             if(key in _storage){
-                if(_storage[key] && typeof _storage[key] == "object" &&
-                        _storage[key]._is_xml &&
-                            _storage[key]._is_xml){
+                if(_storage[key] && typeof _storage[key] == "object" && _storage[key]._is_xml) {
                     return _XMLService.decode(_storage[key].xml);
                 }else{
                     return _storage[key];
