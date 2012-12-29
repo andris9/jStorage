@@ -806,46 +806,43 @@
      * @return {number} 32-bit positive integer hash
      */
 
-     function murmurhash2_32_gc(str, seed) {
-         var
-             l = str.length,
-             h = (seed || 0x9747b28c) ^ l,
-             i = 0,
-             k,
-             a = 0xff,
-             b = 0xffff,
-             c = 0x5bd1e995;
+    function murmurhash2_32_gc(str, seed) {
+        var
+            l = str.length,
+            h = seed ^ l,
+            i = 0,
+            k;
 
-         while (l >= 4) {
-             k =
-                 ((str.charCodeAt(i) & a)) |
-                 ((str.charCodeAt(++i) & a) << 8) |
-                 ((str.charCodeAt(++i) & a) << 16) |
-                 ((str.charCodeAt(++i) & a) << 24);
+        while (l >= 4) {
+            k =
+                ((str.charCodeAt(i) & 0xff)) |
+                ((str.charCodeAt(++i) & 0xff) << 8) |
+                ((str.charCodeAt(++i) & 0xff) << 16) |
+                ((str.charCodeAt(++i) & 0xff) << 24);
 
-             k = (((k & b) * c) + ((((k >>> 16) * c) & b) << 16));
-             k ^= k >>> 24;
-             k = (((k & b) * c) + ((((k >>> 16) * c) & b) << 16));
+            k = (((k & 0xffff) * 0x5bd1e995) + ((((k >>> 16) * 0x5bd1e995) & 0xffff) << 16));
+            k ^= k >>> 24;
+            k = (((k & 0xffff) * 0x5bd1e995) + ((((k >>> 16) * 0x5bd1e995) & 0xffff) << 16));
 
-             h = (((h & b) * c) + ((((h >>> 16) * c) & b) << 16)) ^ k;
+            h = (((h & 0xffff) * 0x5bd1e995) + ((((h >>> 16) * 0x5bd1e995) & 0xffff) << 16)) ^ k;
 
-             l -= 4;
-             ++i;
-       }
+            l -= 4;
+            ++i;
+        }
 
-         switch (l) {
-             case 3: h ^= (str.charCodeAt(i + 2) & a) << 16;
-             case 2: h ^= (str.charCodeAt(i + 1) & a) << 8;
-             case 1: h ^= (str.charCodeAt(i) & a);
-                     h = (((h & b) * c) + ((((h >>> 16) * c) & b) << 16));
-         }
+        switch (l) {
+            case 3: h ^= (str.charCodeAt(i + 2) & 0xff) << 16;
+            case 2: h ^= (str.charCodeAt(i + 1) & 0xff) << 8;
+            case 1: h ^= (str.charCodeAt(i) & 0xff);
+                h = (((h & 0xffff) * 0x5bd1e995) + ((((h >>> 16) * 0x5bd1e995) & 0xffff) << 16));
+        }
 
-         h ^= h >>> 13;
-         h = (((h & b) * c) + ((((h >>> 16) * c) & b) << 16));
-         h ^= h >>> 15;
+        h ^= h >>> 13;
+        h = (((h & 0xffff) * 0x5bd1e995) + ((((h >>> 16) * 0x5bd1e995) & 0xffff) << 16));
+        h ^= h >>> 15;
 
-         return h >>> 0;
-     }
+        return h >>> 0;
+    }
 
     ////////////////////////// PUBLIC INTERFACE /////////////////////////
 
@@ -906,9 +903,7 @@
         get: function(key, def){
             _checkKey(key);
             if(key in _storage){
-                if(_storage[key] && typeof _storage[key] == "object" &&
-                        _storage[key]._is_xml &&
-                            _storage[key]._is_xml){
+                if(_storage[key] && typeof _storage[key] == "object" && _storage[key]._is_xml) {
                     return _XMLService.decode(_storage[key].xml);
                 }else{
                     return _storage[key];
