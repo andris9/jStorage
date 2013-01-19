@@ -27,7 +27,7 @@
  (function(){
     var
         /* jStorage version */
-        JSTORAGE_VERSION = "0.3.1",
+        JSTORAGE_VERSION = "0.3.2",
 
         /* detect a dollar object or create one if not found */
         $ = window.jQuery || window.$ || (window.$ = {}),
@@ -52,7 +52,7 @@
 
     var
         /* This is the object, that holds the cached values */
-        _storage = {},
+        _storage = {__jstorage_meta:{CRC32:{}}},
 
         /* Actual browser storage (localStorage or globalStorage['domain']) */
         _storage_service = {jStorage:"{}"},
