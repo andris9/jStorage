@@ -16,6 +16,141 @@ methods with the polyfills but getter/setters can be used as well:
 
 is absolutely valid with jStorage. The only downside is that you can't use *onstorage* event, you need to fall back to *listenKeyChange* instead.
 
+## Function reference
+
+### set(key, value[, options])
+
+```javascript
+$.jStorage.set(key, value, options)
+```
+
+Saves a value to local storage. key needs to be string otherwise an exception is thrown. value can be any JSONeable value, including objects and arrays or a XML node.
+Currently XML nodes can't be nested inside other objects: `$.jStorage.set("xml", xml_node)` is OK but `$.jStorage.set("xml", {xml: xml_node})` is not.
+
+Options is an optional options object. Currently only available option is options.TTL which can be used to set the TTL value to the key `$.jStorage.set(key, value, {TTL: 1000})`. NB - if no TTL option value has been set, any currently used TTL value for the key will be removed.
+
+### get(key[, default])
+
+```javascript
+value = $.jStorage.get(key)
+value = $.jStorage.get(key, "default value")
+```
+
+get retrieves the value if key exists, or default if it doesn't. key needs to be string otherwise an exception is thrown. default can be any value.
+
+### deleteKey(key)
+
+```javascript
+$.jStorage.deleteKey(key)
+```
+
+Removes a key from the storage. key needs to be string otherwise an exception is thrown.
+
+### setTTL(key, ttl)
+
+```javascript
+$.jStorage.set("mykey", "keyvalue");
+$.jStorage.setTTL("mykey", 3000); // expires in 3 seconds
+```
+
+Sets a TTL (in milliseconds) for an existing key. Use 0 or negative value to clear TTL.
+
+### getTTL(key)
+
+```javascript
+ttl = $.jStorage.getTTL("mykey"); // TTL in milliseconds or 0
+Gets remaining TTL (in milliseconds) for a key or 0 if not TTL has been set.
+```
+
+### flush()
+
+```javascript
+$.jStorage.flush()
+```
+
+Clears the cache.
+
+### index()
+
+```javascript
+$.jStorage.index()
+```
+
+Returns all the keys currently in use as an array.
+
+```javascript
+var index = $.jStorage.index();
+console.log(index); // ["key1","key2","key3"]
+```
+
+### storageSize()
+
+```javascript
+$.jStorage.storageSize()
+```
+
+Returns the size of the stored data in bytes
+
+### currentBackend()
+
+```javascript
+$.jStorage.currentBackend()
+```
+
+Returns the storage engine currently in use or false if none
+
+### reInit()
+
+```javascript
+$.jStorage.reInit()
+```
+
+Reloads the data from browser storage
+
+### storageAvailable()
+
+```javascript
+$.jStorage.storageAvailable()
+```
+
+Returns true if storage is available
+
+### subscribe(channel, callback)
+
+```javascript
+$.jStorage.subscribe("ch1", function(channel, payload){
+    console.log(payload+ " from " + channel);
+});
+```
+
+Subscribes to a Publish/Subscribe channel (see demo)
+
+### publish(channel, payload)
+
+```javascript
+$.jStorage.publish("ch1", "data");
+```
+
+Publishes payload to a Publish/Subscribe channel (see demo)
+
+### listenKeyChange(key, callback)
+
+```javascript
+$.jStorage.listenKeyChange("mykey", function(key, action){
+    console.log(key + " has been " + action);
+});
+```
+
+Listens for updates for selected key. NB! even updates made in other windows/tabs are reflected, so this feature can also be used for some kind of publish/subscribe service.
+
+### stopListening(key[, callback])
+
+```javascript
+$.jStorage.stopListening("mykey"); // cancel all listeners for "mykey" change
+```
+
+Stops listening for key change. If callback is set, only the used callback will be cleared, otherwise all listeners will be dropped.
+
 ## Donate
 
 Support jStorage development
