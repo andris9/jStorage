@@ -27,7 +27,7 @@
  (function(){
     var
         /* jStorage version */
-        JSTORAGE_VERSION = "0.3.2",
+        JSTORAGE_VERSION = "0.4.0",
 
         /* detect a dollar object or create one if not found */
         $ = window.jQuery || window.$ || (window.$ = {}),
@@ -140,9 +140,7 @@
                 resultXML = dom_parser.call("DOMParser" in window && (new DOMParser()) || window, xmlString, 'text/xml');
                 return this.isXML(resultXML)?resultXML:false;
             }
-        },
-
-        _localStoragePolyfillSetKey = function(){};
+        };
 
 
     ////////////////////////// PRIVATE METHODS ////////////////////////
@@ -227,10 +225,6 @@
         // remove dead keys
         _handleTTL();
 
-        // create localStorage and sessionStorage polyfills if needed
-        _createPolyfillStorage("local");
-        _createPolyfillStorage("session");
-
         // start listening for changes
         _setupObserver();
 
@@ -245,222 +239,6 @@
                 }
             }, false);
         }
-    }
-
-    /**
-     * Create a polyfill for localStorage (type="local") or sessionStorage (type="session")
-     *
-     * @param {String} type Either "local" or "session"
-     * @param {Boolean} forceCreate If set to true, recreate the polyfill (needed with flush)
-     */
-    function _createPolyfillStorage(type, forceCreate){
-        var _skipSave = false,
-            _length = 0,
-            i,
-            storage,
-            storage_source = {};
-
-            var rand = Math.random();
-
-        if(!forceCreate && typeof window[type+"Storage"] != "undefined"){
-            return;
-        }
-
-        // Use globalStorage for localStorage if available
-        if(type == "local" && window.globalStorage){
-            localStorage = window.globalStorage[window.location.hostname];
-            return;
-        }
-
-        // only IE6/7 from this point on
-        if(_backend != "userDataBehavior"){
-            return;
-        }
-
-        // Remove existing storage element if available
-        if(forceCreate && window[type+"Storage"] && window[type+"Storage"].parentNode){
-            window[type+"Storage"].parentNode.removeChild(window[type+"Storage"]);
-        }
-
-        storage = document.createElement("button");
-        document.getElementsByTagName('head')[0].appendChild(storage);
-
-        if(type == "local"){
-            storage_source = _storage;
-        }else if(type == "session"){
-            _sessionStoragePolyfillUpdate();
-        }
-
-        for(i in storage_source){
-
-            if(storage_source.hasOwnProperty(i) && i != "__jstorage_meta" && i != "length" && typeof storage_source[i] != "undefined"){
-                if(!(i in storage)){
-                    _length++;
-                }
-                storage[i] = storage_source[i];
-            }
-        }
-
-        // Polyfill API
-
-        /**
-         * Indicates how many keys are stored in the storage
-         */
-        storage.length = _length;
-
-        /**
-         * Returns the key of the nth stored value
-         *
-         * @param {Number} n Index position
-         * @return {String} Key name of the nth stored value
-         */
-        storage.key = function(n){
-            var count = 0, i;
-            _sessionStoragePolyfillUpdate();
-            for(i in storage_source){
-                if(storage_source.hasOwnProperty(i) && i != "__jstorage_meta" && i!="length" && typeof storage_source[i] != "undefined"){
-                    if(count == n){
-                        return i;
-                    }
-                    count++;
-                }
-            }
-        }
-
-        /**
-         * Returns the current value associated with the given key
-         *
-         * @param {String} key key name
-         * @return {Mixed} Stored value
-         */
-        storage.getItem = function(key){
-            _sessionStoragePolyfillUpdate();
-            if(type == "session"){
-                return storage_source[key];
-            }
-            return $.jStorage.get(key);
-        }
-
-        /**
-         * Sets or updates value for a give key
-         *
-         * @param {String} key Key name to be updated
-         * @param {String} value String value to be stored
-         */
-        storage.setItem = function(key, value){
-            if(typeof value == "undefined"){
-                return;
-            }
-            storage[key] = (value || "").toString();
-        }
-
-        /**
-         * Removes key from the storage
-         *
-         * @param {String} key Key name to be removed
-         */
-        storage.removeItem = function(key){
-            if(type == "local"){
-                return $.jStorage.deleteKey(key);
-            }
-
-            storage[key] = undefined;
-
-            _skipSave = true;
-            if(key in storage){
-                storage.removeAttribute(key);
-            }
-            _skipSave = false;
-        }
-
-        /**
-         * Clear storage
-         */
-        storage.clear = function(){
-            if(type == "session"){
-                window.name = "";
-                _createPolyfillStorage("session", true);
-                return;
-            }
-            $.jStorage.flush();
-        }
-
-        if(type == "local"){
-
-            _localStoragePolyfillSetKey = function(key, value){
-                if(key == "length"){
-                    return;
-                }
-                _skipSave = true;
-                if(typeof value == "undefined"){
-                    if(key in storage){
-                        _length--;
-                        storage.removeAttribute(key);
-                    }
-                }else{
-                    if(!(key in storage)){
-                        _length++;
-                    }
-                    storage[key] = (value || "").toString();
-                }
-                storage.length = _length;
-                _skipSave = false;
-            }
-        }
-
-        function _sessionStoragePolyfillUpdate(){
-                if(type != "session"){
-                    return;
-                }
-                try{
-                    storage_source = JSON.parse(window.name || "{}");
-                }catch(E){
-                    storage_source = {};
-                }
-            }
-
-        function _sessionStoragePolyfillSave(){
-            if(type != "session"){
-                return;
-            }
-            window.name = JSON.stringify(storage_source);
-        };
-
-        storage.attachEvent("onpropertychange", function(e){
-            if(e.propertyName == "length"){
-                return;
-            }
-
-            if(_skipSave || e.propertyName == "length"){
-                return;
-            }
-
-            if(type == "local"){
-                if(!(e.propertyName in storage_source) && typeof storage[e.propertyName] != "undefined"){
-                    _length ++;
-                }
-            }else if(type == "session"){
-                _sessionStoragePolyfillUpdate();
-                if(typeof storage[e.propertyName] != "undefined" && !(e.propertyName in storage_source)){
-                    storage_source[e.propertyName] = storage[e.propertyName];
-                    _length++;
-                }else if(typeof storage[e.propertyName] == "undefined" && e.propertyName in storage_source){
-                    delete storage_source[e.propertyName];
-                    _length--;
-                }else{
-                    storage_source[e.propertyName] = storage[e.propertyName];
-                }
-
-                _sessionStoragePolyfillSave();
-                storage.length = _length;
-                return;
-            }
-
-            $.jStorage.set(e.propertyName, storage[e.propertyName]);
-            storage.length = _length;
-        });
-
-        window[type+"Storage"] = storage;
     }
 
     /**
@@ -714,13 +492,14 @@
      * Checks if there's any events on hold to be fired to listeners
      */
     function _handlePubSub(){
+        var i, len;
         if(!_storage.__jstorage_meta.PubSub){
             return;
         }
         var pubelm,
             _pubsubCurrent = _pubsub_last;
 
-        for(var i=len=_storage.__jstorage_meta.PubSub.length-1; i>=0; i--){
+        for(i=len=_storage.__jstorage_meta.PubSub.length-1; i>=0; i--){
             pubelm = _storage.__jstorage_meta.PubSub[i];
             if(pubelm[0] > _pubsub_last){
                 _pubsubCurrent = pubelm[0];
@@ -887,8 +666,6 @@
 
             this.setTTL(key, options.TTL || 0); // also handles saving and _publishChange
 
-            _localStoragePolyfillSetKey(key, value);
-
             _fireObservers(key, "updated");
             return value;
         },
@@ -929,7 +706,6 @@
                 }
 
                 delete _storage.__jstorage_meta.CRC32[key];
-                _localStoragePolyfillSetKey(key, undefined);
 
                 _save();
                 _publishChange();
@@ -996,7 +772,6 @@
          */
         flush: function(){
             _storage = {__jstorage_meta:{CRC32:{}}};
-            _createPolyfillStorage("local", true);
             _save();
             _publishChange();
             _fireObservers(null, "flushed");
