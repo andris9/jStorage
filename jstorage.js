@@ -27,7 +27,7 @@
  (function(){
     var
         /* jStorage version */
-        JSTORAGE_VERSION = "0.4.0",
+        JSTORAGE_VERSION = "0.4.1",
 
         /* detect a dollar object or create one if not found */
         $ = window.jQuery || window.$ || (window.$ = {}),
@@ -662,7 +662,7 @@
 
             _storage[key] = value;
 
-            _storage.__jstorage_meta.CRC32[key] = "2."+murmurhash2_32_gc(JSON.stringify(value));
+            _storage.__jstorage_meta.CRC32[key] = "2." + murmurhash2_32_gc(JSON.stringify(value), 0x9747b28c);
 
             this.setTTL(key, options.TTL || 0); // also handles saving and _publishChange
 
