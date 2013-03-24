@@ -27,7 +27,7 @@
  (function(){
     var
         /* jStorage version */
-        JSTORAGE_VERSION = "0.4.1",
+        JSTORAGE_VERSION = "0.4.2",
 
         /* detect a dollar object or create one if not found */
         $ = window.jQuery || window.$ || (window.$ = {}),
