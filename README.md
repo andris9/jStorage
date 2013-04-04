@@ -135,6 +135,14 @@ $.jStorage.listenKeyChange("mykey", function(key, action){
 
 Listens for updates for selected key. NB! even updates made in other windows/tabs are reflected, so this feature can also be used for some kind of publish/subscribe service.
 
+If you want to listen for any key change, use `"*"` as the key name
+
+```javascript
+$.jStorage.listenKeyChange("*", function(key, action){
+    console.log(key + " has been " + action);
+});
+```
+
 ### stopListening(key[, callback])
 
 ```javascript
@@ -161,10 +169,10 @@ jStorage supports the following features:
 
 ## Browser support
 
-Current availability: jStorage supports all major browsers - Internet Explorer 6+, Firefox 2+, 
+Current availability: jStorage supports all major browsers - Internet Explorer 6+, Firefox 2+,
 Safari 4+, Chrome 4+, Opera 10.50+
 
-If the browser doesn't support data caching, then no exceptions are raised - jStorage can still 
+If the browser doesn't support data caching, then no exceptions are raised - jStorage can still
 be used by the script but nothing is actually stored.
 
 ## Tests

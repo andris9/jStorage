@@ -27,7 +27,7 @@
  (function(){
     var
         /* jStorage version */
-        JSTORAGE_VERSION = "0.4.2",
+        JSTORAGE_VERSION = "0.4.3",
 
         /* detect a dollar object or create one if not found */
         $ = window.jQuery || window.$ || (window.$ = {}),
@@ -370,6 +370,11 @@
             if(_observers[keys[i]]){
                 for(var j=0, jlen = _observers[keys[i]].length; j<jlen; j++){
                     _observers[keys[i]][j](keys[i], action);
+                }
+            }
+            if(_observers["*"]){
+                for(var j=0, jlen = _observers["*"].length; j<jlen; j++){
+                    _observers["*"][j](keys[i], action);
                 }
             }
         }

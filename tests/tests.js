@@ -86,7 +86,7 @@ asyncTest("TTL", function() {
 			ok($.jStorage.get("ttlkey") === null);
 			$.jStorage.flush();
 			start();
-		}, 500);	
+		}, 500);
 	}, 250);
 });
 
@@ -102,7 +102,7 @@ asyncTest("setTTL", function() {
 			ok($.jStorage.get("ttlkey") === null);
 			$.jStorage.flush();
 			start();
-		}, 500);	
+		}, 500);
 	}, 250);
 });
 
@@ -115,7 +115,7 @@ asyncTest("getTTL", function() {
 			ok($.jStorage.getTTL("ttlkey") === 0);
 			$.jStorage.flush();
 			start();
-		}, 500);	
+		}, 500);
 	}, 250);
 });
 
@@ -137,7 +137,7 @@ asyncTest("publish/subscribe", function() {
 		$.jStorage.flush();
 	    start();
 	});
-	
+
 	setTimeout(function(){
 		$.jStorage.publish("testchannel", {arr: [1,2,3]});
 	}, 100);
@@ -145,7 +145,7 @@ asyncTest("publish/subscribe", function() {
 
 module("listenKeyChange");
 
-asyncTest("updated", function() {
+asyncTest("specific key - updated", function() {
 	$.jStorage.listenKeyChange("testkey", function(key, action){
 		ok(key == "testkey");
 		ok(action == "updated");
@@ -158,7 +158,7 @@ asyncTest("updated", function() {
 	}, 100);
 });
 
-asyncTest("deleted", function() {
+asyncTest("specific key - deleted", function() {
 	$.jStorage.listenKeyChange("testkey", function(key, action){
 		ok(key == "testkey");
 		ok(action == "deleted");
@@ -170,4 +170,31 @@ asyncTest("deleted", function() {
 	setTimeout(function(){
 		$.jStorage.deleteKey("testkey");
 	}, 100);
+});
+
+asyncTest("all keys - updated", function() {
+    $.jStorage.listenKeyChange("*", function(key, action){
+        ok(key == "testkey");
+        ok(action == "updated");
+        $.jStorage.stopListening("*");
+        start();
+    });
+
+    setTimeout(function(){
+        $.jStorage.set("testkey", "value");
+    }, 100);
+});
+
+asyncTest("specific key - deleted", function() {
+    $.jStorage.listenKeyChange("*", function(key, action){
+        ok(key == "testkey");
+        ok(action == "deleted");
+        $.jStorage.stopListening("*");
+        $.jStorage.flush();
+        start();
+    });
+
+    setTimeout(function(){
+        $.jStorage.deleteKey("testkey");
+    }, 100);
 });
