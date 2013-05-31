@@ -176,6 +176,13 @@
         else if("globalStorage" in window){
             try {
                 if(window.globalStorage) {
+					if(window.location.hostname == 'localhost'){
+						var hostloc = 'localhost.localdomain';
+						_storage_service = window.globalStorage[hostloc];
+					}
+					else{
+						_storage_service = window.globalStorage[window.location.hostname];
+					}
                     _storage_service = window.globalStorage[window.location.hostname];
                     _backend = "globalStorage";
                     _observer_update = _storage_service.jStorage_update;
