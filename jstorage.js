@@ -27,7 +27,7 @@
  (function(){
     var
         /* jStorage version */
-        JSTORAGE_VERSION = "0.4.3",
+        JSTORAGE_VERSION = "0.4.4",
 
         /* detect a dollar object or create one if not found */
         $ = window.jQuery || window.$ || (window.$ = {}),
@@ -396,7 +396,7 @@
                 _storage_service.jStorage_update = updateTime;
             } catch (E8) {
                 // safari private mode has been enabled after the jStorage initialization
-                _backend = null;
+                _backend = false;
             }
         }else if(_backend == "userDataBehavior"){
             _storage_elm.setAttribute("jStorage_update", updateTime);
