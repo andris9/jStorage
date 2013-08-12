@@ -392,7 +392,12 @@
         var updateTime = (+new Date()).toString();
 
         if(_backend == "localStorage" || _backend == "globalStorage"){
-            _storage_service.jStorage_update = updateTime;
+            try {
+                _storage_service.jStorage_update = updateTime;
+            } catch (E8) {
+                // safari private mode has been enabled after the jStorage initialization
+                _backend = null;
+            }
         }else if(_backend == "userDataBehavior"){
             _storage_elm.setAttribute("jStorage_update", updateTime);
             _storage_elm.save("jStorage");
