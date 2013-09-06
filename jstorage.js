@@ -27,7 +27,7 @@
  (function(){
     var
         /* jStorage version */
-        JSTORAGE_VERSION = "0.4.4",
+        JSTORAGE_VERSION = "0.4.5",
 
         /* detect a dollar object or create one if not found */
         $ = window.jQuery || window.$ || (window.$ = {}),
@@ -535,7 +535,9 @@
         if(_pubsub_observers[channel]){
             for(var i=0, len = _pubsub_observers[channel].length; i<len; i++){
                 // send immutable data that can't be modified by listeners
-                _pubsub_observers[channel][i](channel, JSON.parse(JSON.stringify(payload)));
+                try{
+                    _pubsub_observers[channel][i](channel, JSON.parse(JSON.stringify(payload)));
+                }catch(E){};
             }
         }
     }
