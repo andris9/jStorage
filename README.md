@@ -186,3 +186,7 @@ Project homepage and docs: [www.jstorage.info](http://www.jstorage.info)
 ## License
 
 **MIT**
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/andris9/jstorage/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
