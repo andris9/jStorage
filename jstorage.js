@@ -926,7 +926,22 @@
          */
         reInit: function(){
             _reloadData();
-        }
+        },
+
+        /**
+         * Removes reference from global objects and saves it as jStorage
+         *
+         * @param {Boolean} option if needed to save object as simple 'jStorage' in windows context
+         */
+         noConflict: function( saveInGlobal ) {
+            delete window.$.jStorage
+
+            if ( saveInGlobal ) {
+                window.jStorage = this;
+            }
+
+            return this;
+         }
     };
 
     // Initialize jStorage
