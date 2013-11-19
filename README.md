@@ -185,7 +185,9 @@ Project homepage and docs: [www.jstorage.info](http://www.jstorage.info)
 
 ## License
 
-**MIT**
+[Unlicense](http://unlicense.org/) Since version 0.4.7
+
+**MIT** (versions up to 0.4.6)
 
 
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/andris9/jstorage/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
