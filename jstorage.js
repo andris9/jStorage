@@ -27,7 +27,7 @@
  (function(){
     var
         /* jStorage version */
-        JSTORAGE_VERSION = "0.4.5",
+        JSTORAGE_VERSION = "0.4.6",
 
         /* detect a dollar object or create one if not found */
         $ = window.jQuery || window.$ || (window.$ = {}),
@@ -46,7 +46,7 @@
         };
 
     // Break if no JSON support was found
-    if(!('parse' in JSON) || !('stringify' in JSON)){
+    if(!("parse" in JSON) || !("stringify" in JSON)){
         throw new Error("No JSON support found, include //cdnjs.cloudflare.com/ajax/libs/json2/20110223/json2.js to page");
     }
 
@@ -54,7 +54,7 @@
         /* This is the object, that holds the cached values */
         _storage = {__jstorage_meta:{CRC32:{}}},
 
-        /* Actual browser storage (localStorage or globalStorage['domain']) */
+        /* Actual browser storage (localStorage or globalStorage["domain"]) */
         _storage_service = {jStorage:"{}"},
 
         /* DOM element for older IE versions, holds userData behavior */
@@ -128,8 +128,8 @@
             decode: function(xmlString){
                 var dom_parser = ("DOMParser" in window && (new DOMParser()).parseFromString) ||
                         (window.ActiveXObject && function(_xmlString) {
-                    var xml_doc = new ActiveXObject('Microsoft.XMLDOM');
-                    xml_doc.async = 'false';
+                    var xml_doc = new ActiveXObject("Microsoft.XMLDOM");
+                    xml_doc.async = "false";
                     xml_doc.loadXML(_xmlString);
                     return xml_doc;
                 }),
@@ -137,7 +137,7 @@
                 if(!dom_parser){
                     return false;
                 }
-                resultXML = dom_parser.call("DOMParser" in window && (new DOMParser()) || window, xmlString, 'text/xml');
+                resultXML = dom_parser.call("DOMParser" in window && (new DOMParser()) || window, xmlString, "text/xml");
                 return this.isXML(resultXML)?resultXML:false;
             }
         };
@@ -154,9 +154,9 @@
         var localStorageReallyWorks = false;
         if("localStorage" in window){
             try {
-                window.localStorage.setItem('_tmptest', 'tmpval');
+                window.localStorage.setItem("_tmptest", "tmpval");
                 localStorageReallyWorks = true;
-                window.localStorage.removeItem('_tmptest');
+                window.localStorage.removeItem("_tmptest");
             } catch(BogusQuotaExceededErrorOnIos5) {
                 // Thanks be to iOS5 Private Browsing mode which throws
                 // QUOTA_EXCEEDED_ERRROR DOM Exception 22.
@@ -176,12 +176,12 @@
         else if("globalStorage" in window){
             try {
                 if(window.globalStorage) {
-					if(window.location.hostname == 'localhost'){
-						_storage_service = window.globalStorage['localhost.localdomain'];
-					}
-					else{
-						_storage_service = window.globalStorage[window.location.hostname];
-					}
+                    if(window.location.hostname == "localhost"){
+                        _storage_service = window.globalStorage["localhost.localdomain"];
+                    }
+                    else{
+                        _storage_service = window.globalStorage[window.location.hostname];
+                    }
                     _backend = "globalStorage";
                     _observer_update = _storage_service.jStorage_update;
                 }
@@ -189,14 +189,14 @@
         }
         /* Check if browser supports userData behavior */
         else {
-            _storage_elm = document.createElement('link');
+            _storage_elm = document.createElement("link");
             if(_storage_elm.addBehavior){
 
                 /* Use a DOM element to act as userData storage */
-                _storage_elm.style.behavior = 'url(#default#userData)';
+                _storage_elm.style.behavior = "url(#default#userData)";
 
                 /* userData element needs to be inserted into the DOM! */
-                document.getElementsByTagName('head')[0].appendChild(_storage_elm);
+                document.getElementsByTagName("head")[0].appendChild(_storage_elm);
 
                 try{
                     _storage_elm.load("jStorage");
@@ -451,10 +451,10 @@
      */
     function _checkKey(key){
         if(!key || (typeof key != "string" && typeof key != "number")){
-            throw new TypeError('Key name must be string or numeric');
+            throw new TypeError("Key name must be string or numeric");
         }
         if(key == "__jstorage_meta"){
-            throw new TypeError('Reserved key name');
+            throw new TypeError("Reserved key name");
         }
         return true;
     }
@@ -703,7 +703,7 @@
                     return _storage[key];
                 }
             }
-            return typeof(def) == 'undefined' ? null : def;
+            return typeof(def) == "undefined" ? null : def;
         },
 
         /**
@@ -808,7 +808,7 @@
 
         /**
          * Returns an index of all used keys as an array
-         * ['key1', 'key2',..'keyN']
+         * ["key1", "key2",.."keyN"]
          *
          * @return {Array} Used keys
         */
@@ -898,7 +898,7 @@
         subscribe: function(channel, callback){
             channel = (channel || "").toString();
             if(!channel){
-                throw new TypeError('Channel not defined');
+                throw new TypeError("Channel not defined");
             }
             if(!_pubsub_observers[channel]){
                 _pubsub_observers[channel] = [];
@@ -915,7 +915,7 @@
         publish: function(channel, payload){
             channel = (channel || "").toString();
             if(!channel){
-                throw new TypeError('Channel not defined');
+                throw new TypeError("Channel not defined");
             }
 
             _publish(channel, payload);
@@ -931,7 +931,7 @@
         /**
          * Removes reference from global objects and saves it as jStorage
          *
-         * @param {Boolean} option if needed to save object as simple 'jStorage' in windows context
+         * @param {Boolean} option if needed to save object as simple "jStorage" in windows context
          */
          noConflict: function( saveInGlobal ) {
             delete window.$.jStorage
