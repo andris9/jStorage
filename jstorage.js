@@ -37,7 +37,7 @@
  (function(){
     var
         /* jStorage version */
-        JSTORAGE_VERSION = "0.4.7",
+        JSTORAGE_VERSION = "0.4.8",
 
         /* detect a dollar object or create one if not found */
         $ = window.jQuery || window.$ || (window.$ = {}),
@@ -460,7 +460,7 @@
      * @param {String} key Key name
      */
     function _checkKey(key){
-        if(!key || (typeof key != "string" && typeof key != "number")){
+        if(typeof key != "string" && typeof key != "number"){
             throw new TypeError("Key name must be string or numeric");
         }
         if(key == "__jstorage_meta"){
