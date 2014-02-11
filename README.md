@@ -1,3 +1,9 @@
+## NB!
+
+**If you don't need to support older Internet Explorer Versions (IE7 and below), use [simpleStorage](https://github.com/andris9/simpleStorage) instead.**
+
+----
+
 # jStorage
 
 **jStorage** is a cross-browser key-value store database to store data locally in the browser - jStorage supports all major browsers, both in **desktop** (yes - even Internet Explorer 6) and in **mobile**.
