@@ -502,7 +502,7 @@
 
         // set next check
         if(nextExpire != Infinity){
-            _ttl_timeout = setTimeout(_handleTTL, nextExpire - curtime);
+            _ttl_timeout = setTimeout(Math.min(_handleTTL, nextExpire - curtime, 0x7FFFFFFF));
         }
 
         // save changes
