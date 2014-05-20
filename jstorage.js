@@ -664,7 +664,7 @@
          * @param {Mixed} value Value to set. This can be any value that is JSON
          *              compatible (Numbers, Strings, Objects etc.).
          * @param {Object} [options] - possible options to use
-         * @param {Number} [options.TTL] - optional TTL value
+         * @param {Number} [options.TTL] - optional TTL value, in milliseconds
          * @return {Mixed} the used value
          */
         set: function(key, value, options){
