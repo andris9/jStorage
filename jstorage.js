@@ -39,7 +39,7 @@
 
     var
     /* jStorage version */
-        JSTORAGE_VERSION = '0.4.9',
+        JSTORAGE_VERSION = '0.4.10',
 
         /* detect a dollar object or create one if not found */
         $ = window.jQuery || window.$ || (window.$ = {}),
@@ -516,7 +516,7 @@
 
         // set next check
         if (nextExpire != Infinity) {
-            _ttl_timeout = setTimeout(Math.min(_handleTTL, nextExpire - curtime, 0x7FFFFFFF));
+            _ttl_timeout = setTimeout(_handleTTL, Math.min(nextExpire - curtime, 0x7FFFFFFF));
         }
 
         // save changes
