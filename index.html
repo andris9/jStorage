@@ -1,82 +1,446 @@
-<!doctype html>
+
+<!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>jStorage by andris9</title>
+    <head>
+        <title>jStorage - simple JavaScript plugin to store data locally</title>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8">
 
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <script src="javascripts/scale.fix.js"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-  </head>
-  <body>
-    <div class="wrapper">
-      <header>
-        <h1 class="header">jStorage</h1>
-        <p class="header">jStorage is a simple key/value database to store data on browser side</p>
+        <style type="text/css">
 
-        <ul>
-          <li class="download"><a class="buttons" href="https://github.com/andris9/jStorage/zipball/master">Download ZIP</a></li>
-          <li class="download"><a class="buttons" href="https://github.com/andris9/jStorage/tarball/master">Download TAR</a></li>
-          <li><a class="buttons github" href="https://github.com/andris9/jStorage">View On GitHub</a></li>
-        </ul>
+            body{
+                font-family: Sans-serif;
+                font-size: 13px;
+                color: #333;
+            }
 
-        <p class="header">This project is maintained by <a class="header name" href="https://github.com/andris9">andris9</a></p>
+            table{
+                border-left: 1px solid #CDEB8B;
+                border-top: 1px solid #CDEB8B;
+            }
 
+            h1{
+                padding-top: 50px;
+                font-size: 26px;
+                font-weight: bold;
+                border-bottom: 3px solid #CDEB8B;
+            }
 
-      </header>
-      <section>
-        <h3>
-<a name="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages"><span class="octicon octicon-link"></span></a>Welcome to GitHub Pages.</h3>
+            h2{
+                font-size: 18px;
+                font-weight: bold;
+                border-top: 1px solid #EEE;
+                border-bottom: 3px solid #CDEB8B;
+                margin-top: 20px;
+                padding-top: 20px;
+            }
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
+            h3{
+                font-size: 14px;
+                font-weight: bold;
+            }
 
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
-</code></pre>
+            td{
+                padding: 3px;
+                border-right: 1px solid #CDEB8B;
+                border-bottom: 1px solid #CDEB8B;
+            }
 
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
+            thead{
+                background: #006E2E;
+                color: white;
+            }
 
-<h3>
-<a name="designer-templates" class="anchor" href="#designer-templates"><span class="octicon octicon-link"></span></a>Designer Templates</h3>
+            .container{
+                width: 728px;
+                margin: 10px auto;
+            }
 
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
+            .green{
+                background: #6BBA70;
+                color: white;
+                text-align: center;
+            }
 
-<h3>
-<a name="rather-drive-stick" class="anchor" href="#rather-drive-stick"><span class="octicon octicon-link"></span></a>Rather Drive Stick?</h3>
+            .red{
+                background: #D01F3C;
+                color: white;
+                text-align: center;
+            }
 
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
+            .yellow{
+                background: yellow;
+                color: black;
+                text-align: center;
+            }
 
-<h3>
-<a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
+        </style>
 
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
+        <script src="//ajax.googleapis.com/ajax/libs/prototype/1.7.2.0/prototype.js"></script>
+        <script src="jstorage.min.js"></script>
 
-<h3>
-<a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Support or Contact</h3>
+        <script>
+            function insert_value(){
+                var row = new Element("tr"),
+                    key = $('key').value,
+                    val = $('val').value;
+                if(!key){
+                    alert("KEY NEEDS TO BE SET!");
+                    $('key').focus();
+                    return;
+                }
+                $.jStorage.set(key, val);
+                $('key').value = "";
+                $('val').value = "";
+                reDraw();
+            }
 
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
-      </section>
-      <footer>
-        <p><small>Hosted on <a href="http://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
-      </footer>
+            function flush_data(){
+                $.jStorage.flush();
+                reDraw();
+            }
+
+            function get_value(){
+                var value = $.jStorage.get($F("key2"));
+                alert(value);
+                $('key2').value = "";
+            }
+
+            function flush_values(){
+                $.jStorage.flush();
+                reDraw();
+            }
+
+            function reDraw(){
+
+                var row, del, index;
+
+                $$("tr[class~=rida]").each(function(c){c.remove();});
+
+                index = $.jStorage.index();
+                for(var i=0; i<index.length; i++){
+                    row = new Element("tr",{className:"rida"});
+                    row.insert(new Element("td").update(index[i]));
+                    row.insert(new Element("td").update($.jStorage.get(index[i])));
+                    del = new Element("a",{href:"javascript:void(0)"}).update("DEL");
+                    (function(i){
+                        del.observe("click", function(){
+                            $.jStorage.deleteKey(i);
+                            reDraw();
+                        });
+                    })(index[i])
+                    row.insert(new Element("td").insert(del));
+                    $("tulemused").insert(row);
+
+                }
+            }
+        </script>
+
+        <!-- Exception Hub start -->
+        <script type="text/javascript">
+            var ehHost = (("https:" == document.location.protocol) ? "https://" : "http://");
+            document.write(unescape("%3Cscript src='" + ehHost + "js.exceptionhub.com/javascripts/eh.js' type='text/javascript'%3E%3C/script%3E"));
+        </script>
+        <script>
+            ExceptionHub.setup("b83fb652800fa143596deb6600fd9a2d", 116, 'production');
+        </script>
+        <!-- Exception Hub end -->
+
+    </head>
+    <body>
+
+    <div class="container">
+
+    <h1>jStorage - store data locally with JavaScript</h1>
+
+    <p><strong>jStorage</strong> is a cross-browser key-value store database to store data locally in the browser - jStorage supports all major browsers, both in <strong>desktop</strong> (yes - even Internet Explorer 6) and in <strong>mobile</strong>.</p>
+
+    <p>Additionally jStorage is library agnostic, it works well with any other JavaScript library on the same webpage, be it jQuery, Prototype, MooTools or something else. Though you still need to have either a third party library (Prototype, MooTools) or <a href="//cdnjs.cloudflare.com/ajax/libs/json2/20110223/json2.js">JSON2</a> on the page to support older IE versions.</p>
+
+    <p>jStorage supports storing Strings, Numbers, JavaScript objects, Arrays and even native XML nodes. jStorage also supports setting TTL values for auto expiring stored keys and - best of all - notifying other tabs/windows when a key has been changed or publishing/subscribing to events from the same or another tab/window, which makes jStorage also a local PubSub platform for web applications.</p>
+
+    <p>jStorage is pretty small, about 7kB when minified and 4kB gzipped.</p>
+
+    <h2>Donate</h2>
+
+    <p>Support jStorage development</p>
+
+    <p><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=DB26KWR2BQX5W"><img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" alt="Donate to author" style="max-width:100%;"></a></p>
+
+    <h2>Index</h2>
+    <ol>
+        <li><a href="#basics">Basics</a></li>
+        <li><a href="#download">Download</a></li>
+        <li><a href="#test">Interactive test</a></li>
+        <li><a href="#support">Browser support</a></li>
+        <li><a href="#usage">Usage</a></li>
+        <li><a href="#references">Function reference</a></li>
+        <li><a href="#example">Usage example</a></li>
+        <li><a href="#issues">Issues</a></li>
+        <li><a href="#contact">Contact and Copyright</a></li>
+    </ol>
+
+    <div style="width: 728px; margin:0 auto">
+        <script type="text/javascript"><!--
+        google_ad_client = "pub-7677294784429110";
+        /* 728x90, created 11/8/10 */
+        google_ad_slot = "3636140900";
+        google_ad_width = 728;
+        google_ad_height = 90;
+        //-->
+        </script>
+        <script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js"></script>
     </div>
-    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
-		          <script type="text/javascript">
-            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-          </script>
-          <script type="text/javascript">
-            try {
-              var pageTracker = _gat._getTracker("UA-51322-27");
-            pageTracker._trackPageview();
-            } catch(err) {}
-          </script>
 
-  </body>
+    <h2 id="basics">1. Basics</h2>
+
+    <p>jStorage makes use of HTML5 local storage where available and userData behavior in Internet Explorer older versions.</p>
+
+    <p>Current availability: jStorage supports all major browsers - Internet Explorer 6+, Firefox 2+, Safari 4+, Chrome 4+, Opera 10.50+</p>
+
+    <p>If the browser doesn't support data caching, then no exceptions are raised - jStorage can still be used by the script but nothing is actually stored.</p>
+
+    <p>jStorage is really small, just about <b>7kB</b> when minified (4kB when gzipped)!</p>
+
+    <h2 id="download">2. Download</h2>
+
+    <p><b>jStorage</b> can be downloaded at <a href="http://github.com/andris9/jStorage">github</a> (<a href="http://github.com/andris9/jStorage/raw/master/jstorage.js">direct download link</a>)</p>
+
+
+    <h2 id="test">3. Interactive test</h2>
+    <p>Add some values and refresh the page - if your browser supports storing local data, then the values should survive the page refresh.</p>
+
+    <table cellspacing="0" cellpadding="0" style="width: 100%">
+    <thead>
+        <tr><td width="120">KEY</td><td>VALUE</td><td width="50">&nbsp;</td></tr>
+    </thead>
+    <tbody id="tulemused"></tbody>
+    <tfoot>
+        <tr>
+            <td><input type="text" id="key" name="key" value="" style="width: 110px;" /></td>
+            <td><input type="text" id="val" name="val" value="" style="width: 98%" /></td>
+            <td><a href="javascript:insert_value()">ADD</a></td>
+        </tr>
+        <tr>
+            <td><input type="text" id="key2" name="key2" value="" style="width: 110px;" /></td>
+            <td>Clicking "GET" alerts the value for provided key with the method <em>$.jStorage.get(key)</em></td>
+            <td><a href="javascript:get_value()">GET</a></td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>Clear all saved data</td>
+            <td><a href="javascript:flush_values()">FLUSH</a></td>
+        </tr>
+    </tfoot>
+    </table>
+
+    <h2 id="support">4. Browser support</h2>
+
+    <table  border="0" cellspacing="0" cellpadding="0" width="100%">
+        <thead>
+            <tr>
+                <td>Browser</td>
+                <td width="130" style="text-align: center;">Storage support</td>
+                <td width="130" style="text-align: center;">Survives browser restart</td>
+                <td width="130" style="text-align: center;">Survives browser crash</td>
+                <td width="130" style="text-align: center;">Storage size</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>Chrome 4</td>       <td class="green">+</td>    <td class="green">+</td>    <td class="green">+</td>    <td class="green">5 MB</td>     </tr>
+            <tr><td>Firefox 3.6</td>    <td class="green">+</td>    <td class="green">+</td>    <td class="green">+</td>    <td class="green">5 MB</td>     </tr>
+            <tr><td>Firefox 3</td>      <td class="green">+</td>    <td class="green">+</td>    <td class="green">+</td>    <td class="green">5 MB</td>     </tr>
+            <tr><td>Firefox 2</td>      <td class="green">+</td>    <td class="green">+</td>    <td class="green">+</td>    <td class="green">5 MB</td>     </tr>
+            <tr><td>IE8</td>            <td class="green">+</td>    <td class="green">+</td>    <td class="green">+</td>    <td class="green">10 MB</td>    </tr>
+            <tr><td>IE7</td>            <td class="green">+</td>    <td class="green">+</td>    <td class="green">+</td>    <td class="yellow">128 kB</td>  </tr>
+            <tr><td>IE6</td>            <td class="green">+</td>    <td class="green">+</td>    <td class="green">+</td>    <td class="yellow">128 kB</td>  </tr>
+            <tr><td>Opera 10.50</td>    <td class="green">+</td>    <td class="green">+</td>    <td class="red">-</td>      <td class="green">5 MB</td>     </tr>
+            <tr><td>Opera 10.10</td>    <td class="red">-</td>      <td>N/A</td>                <td>N/A</td>                <td>N/A</td>                    </tr>
+            <tr><td>Safari 4</td>       <td class="green">+</td>    <td class="green">+</td>    <td class="green">+</td>    <td class="green">5 MB</td>     </tr>
+            <tr><td>Iphone Safari</td>  <td class="green">+</td>    <td class="green">+</td>    <td class="green">+</td>    <td class="green">5 MB</td>     </tr>
+            <tr><td>Safari 3</td>       <td class="red">-</td>      <td>N/A</td>                <td>N/A</td>                <td>N/A</td>                    </tr>
+        </tbody>
+    </table>
+
+    <h2 id="usage">5. Usage</h2>
+
+    <p>jStorage requires <a href="http://prototypejs.org/">Prototype</a>, <a href="http://mootools.net/">MooTools</a> or <a href="http://jquery.com">jQuery</a> + <a href="http://code.google.com/p/jquery-json/">jQuery-JSON</a> or <a href="//cdnjs.cloudflare.com/ajax/libs/json2/20110223/json2.js">JSON2</a>. Either way, the syntax stays the same.</p>
+
+    <p><b>Simple setup to support jStorage with JSON2</b></p>
+
+    <pre>&lt;script src="//cdnjs.cloudflare.com/ajax/libs/json2/20110223/json2.js"&gt;&lt;/script&gt;
+&lt;script src="https://raw.github.com/andris9/jStorage/master/jstorage.js"&gt;&lt;/script&gt;
+&lt;script&gt; /* $.jStorage is now available */ &lt;/script&gt;</pre>
+
+    <p><b>Setup with jQuery2</b></p>
+
+    <pre>&lt;script src="//cdnjs.cloudflare.com/ajax/libs/json2/20110223/json2.js"&gt;&lt;/script&gt;
+&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.0/jquery.min.js"&gt;&lt;/script&gt;
+&lt;script src="https://raw.github.com/andris9/jStorage/master/jstorage.js"&gt;&lt;/script&gt;
+&lt;script&gt; /* $.jStorage is now available */ &lt;/script&gt;</pre>
+
+    <h2 id="reference">6. Function reference</h2>
+
+    <h3>set(key, value[, options])</h3>
+
+    <pre>$.jStorage.set(key, value, options)</pre>
+
+    <p>Saves a value to local storage. <em>key</em> needs to be string otherwise an exception is thrown. <em>value</em> can be any JSONeable value, including objects and arrays or a XML node.<br />Currently XML nodes can't be nested inside other objects: $.jStorage.set("xml", xml_node) is OK but $.jStorage.set("xml", {xml: xml_node}) is not.</p>
+
+    <p>Options is an optional options object. Currently only available option is <code>options.TTL</code> which can be used to set the TTL value to the key (<code>$.jStorage.set(key, value, {TTL: 1000});</code>). <strong>NB</strong> - if no TTL option value has been set, any currently used TTL value for the key will be removed.</p>
+
+    <h3>get(key[, default])</h3>
+
+    <pre>value = $.jStorage.get(key)
+value = $.jStorage.get(key, "default value")
+    </pre>
+
+    <p><b>get</b> retrieves the value if <em>key</em> exists, or default if it doesn't. <em>key</em> needs to be string otherwise an exception is thrown. <em>default</em> can be any value.</p>
+
+    <h3>deleteKey(key)</h3>
+
+    <pre>$.jStorage.deleteKey(key)</pre>
+
+    <p>Removes a <em>key</em> from the storage. <em>key</em> needs to be string otherwise an exception is thrown.</p>
+
+    <h3>setTTL(key, ttl)</h3>
+
+    <pre>$.jStorage.set("mykey", "keyvalue");
+$.jStorage.setTTL("mykey", 3000); // expires in 3 seconds</pre>
+
+    <p>Sets a TTL (in milliseconds) for an existing <em>key</em>. Use 0 or negative value to clear TTL.</p>
+
+    <h3>getTTL(key)</h3>
+
+    <pre>ttl = $.jStorage.getTTL("mykey"); // TTL in milliseconds or 0</pre>
+
+    <p>Gets remaining TTL (in milliseconds) for a <em>key</em> or 0 if not TTL has been set.</p>
+
+    <h3>flush()</h3>
+
+    <pre>$.jStorage.flush()</pre>
+
+    <p>Clears the cache.</p>
+
+    <h3>index()</h3>
+
+    <pre>$.jStorage.index()</pre>
+
+    <p>Returns all the keys currently in use as an array.<br />
+    <span style="font-family: monospace;">var index = $.jStorage.index();<br />console.log(index); // ["key1","key2","key3"]</span></p>
+
+    <h3>storageSize()</h3>
+
+    <pre>$.jStorage.storageSize()</pre>
+
+    <p>Returns the size of the stored data in bytes</p>
+
+    <h3>currentBackend()</h3>
+
+    <pre>$.jStorage.currentBackend()</pre>
+
+    <p>Returns the storage engine currently in use or false if none</p>
+
+    <h3>reInit()</h3>
+
+    <pre>$.jStorage.reInit()</pre>
+
+    <p>Reloads the data from browser storage</p>
+
+    <h3>storageAvailable()</h3>
+
+    <pre>$.jStorage.storageAvailable()</pre>
+
+    <p>Returns true if storage is available</p>
+
+    <h3>subscribe(channel, callback)</h3>
+
+    <pre>$.jStorage.subscribe("ch1", function(channel, payload){
+    console.log(payload+ " from " + channel);
+});</pre>
+
+    <p>Subscribes to a Publish/Subscribe channel)</p>
+
+    <h3>publish(channel, payload)</h3>
+
+    <pre>$.jStorage.publish("ch1", "data");</pre>
+
+    <p>Publishes payload to a Publish/Subscribe channel</p>
+
+    <h3>listenKeyChange(key, callback)</h3>
+
+    <pre>$.jStorage.listenKeyChange("mykey", function(key, action){
+    console.log(key + " has been " + action);
+});</pre>
+
+    <p>Listens for updates for selected key. <b>NB!</b> even updates made in other
+        windows/tabs are reflected, so this feature can also be used for some kind
+        of publish/subscribe service.</p>
+
+    <h3>stopListening(key[, callback])</h3>
+
+    <pre>$.jStorage.stopListening("mykey"); // cancel all listeners for "mykey" change</pre>
+
+    <p>Stops listening for key change. If callback is set, only the used callback will be cleared, otherwise all listeners will be dropped.</p>
+
+    <h2 id="example">7. Usage example</h2>
+
+    <h3>jQuery</h3>
+
+    <p>jQuery doesn't come with built in JSON encoder/decoder so if you need to support IE6/IE7 you should include one yourselt like in the example</p>
+
+    <pre>&lt;script src="//cdnjs.cloudflare.com/ajax/libs/json2/20110223/json2.js"&gt;&lt;/script&gt;
+&lt;script src="//code.jquery.com/jquery-1.9.1.min.js"&gt;&lt;/script&gt;
+&lt;script src="jstorage.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+// Check if "key" exists in the storage
+var value = $.jStorage.get("key");
+if(!value){
+    // if not - load the data from the server
+    value = load_data_from_server()
+    // and save it
+    $.jStorage.set("key",value);
+}
+&lt;/script&gt;</pre>
+
+    <h3>Prototype</h3>
+
+    <pre>&lt;script src="//ajax.googleapis.com/ajax/libs/prototype/1.7.1.0/prototype.js"&gt;&lt;/script&gt;
+&lt;script src="jstorage.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+// Check if "key" exists in the storage
+var value = $.jStorage.get("key");
+if(!value){
+    // if not - load the data from the server
+    value = load_data_from_server()
+    // and save it
+    $.jStorage.set("key",value);
+}
+&lt;/script&gt;</pre>
+
+    <h2 id="issues">8. Issues</h2>
+    <ul>
+        <li><b>Why would you want to use jStorage when cookies work already in every browser?</b><br/>
+        Cookies are not meant to save large quantities of data locally - they are meant to pass around ID values to keep track of users. Internet Explorer allows to use up to 20 cookies per domain with the payload of 4kB per cookie. It isn't very much, especially considering the need to chunk larger data into smaller bits. The fact that the data (max. 80 kB) is sent to the server with *every* call doesn't sound much of a good idea either.
+        </li>
+    </ul>
+
+    <h2 id="contact">9. Contact and Copyright</h2>
+
+    <p>&copy; 2010 - 2012 Andris Reinman, <a href="mailto:andris.reinman@gmail.com">andris.reinman@gmail.com</a><br />jStorage is licensed under <a href="http://unlicense.org/">Unlicense</a>, so basically you can do whatever you want to do with it.</p>
+
+    </div>
+
+    <script>reDraw();</script>
+
+    <script type="text/javascript">
+        var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+        document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+    <script type="text/javascript">
+        try {
+            var pageTracker = _gat._getTracker("UA-51322-27");
+            pageTracker._trackPageview();
+        } catch(err) {}
+    </script>
+    </body>
 </html>
