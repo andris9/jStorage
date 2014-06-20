@@ -944,7 +944,7 @@
          * @param {Boolean} option if needed to save object as simple "jStorage" in windows context
          */
          noConflict: function( saveInGlobal ) {
-            delete window.$.jStorage
+            delete window.$.jStorage;
 
             if ( saveInGlobal ) {
                 window.jStorage = this;
