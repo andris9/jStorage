@@ -39,7 +39,7 @@
 
     var
     /* jStorage version */
-        JSTORAGE_VERSION = '0.4.10',
+        JSTORAGE_VERSION = '0.4.11',
 
         /* detect a dollar object or create one if not found */
         $ = window.jQuery || window.$ || (window.$ = {}),
@@ -58,7 +58,7 @@
         };
 
     // Break if no JSON support was found
-    if (!JSON.parse || !JSON.stringify) {
+    if (typeof JSON.parse !== 'function' || typeof JSON.stringify !== 'function') {
         throw new Error('No JSON support found, include //cdnjs.cloudflare.com/ajax/libs/json2/20110223/json2.js to page');
     }
 
