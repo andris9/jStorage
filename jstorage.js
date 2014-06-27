@@ -58,7 +58,7 @@
         };
 
     // Break if no JSON support was found
-    if (!('parse' in JSON) || !('stringify' in JSON)) {
+    if (!JSON.parse || !JSON.stringify) {
         throw new Error('No JSON support found, include //cdnjs.cloudflare.com/ajax/libs/json2/20110223/json2.js to page');
     }
 
