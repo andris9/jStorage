@@ -531,19 +531,24 @@
      * Checks if there's any events on hold to be fired to listeners
      */
     function _handlePubSub() {
-        var i, len;
+        var i, j, len;
         if (!_storage.__jstorage_meta.PubSub) {
             return;
         }
         var pubelm,
-            _pubsubCurrent = _pubsub_last;
+            _pubsubCurrent = _pubsub_last,
+            needFired = [];
 
         for (i = len = _storage.__jstorage_meta.PubSub.length - 1; i >= 0; i--) {
             pubelm = _storage.__jstorage_meta.PubSub[i];
             if (pubelm[0] > _pubsub_last) {
                 _pubsubCurrent = pubelm[0];
-                _fireSubscribers(pubelm[1], pubelm[2]);
+                needFired.unshift(pubelm);
             }
+        }
+
+        for(j = needFired.length - 1; j >= 0; j--){
+            _fireSubscribers(needFired[j][1], needFired[j][2]);
         }
 
         _pubsub_last = _pubsubCurrent;
