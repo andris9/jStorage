@@ -34,12 +34,15 @@
  * For more information, please refer to <http://unlicense.org/>
  */
 
+/* global ActiveXObject: false */
+/* jshint browser: true */
+
 (function() {
     'use strict';
 
     var
     /* jStorage version */
-        JSTORAGE_VERSION = '0.4.11',
+        JSTORAGE_VERSION = '0.4.12',
 
         /* detect a dollar object or create one if not found */
         $ = window.jQuery || window.$ || (window.$ = {}),
@@ -531,7 +534,7 @@
      * Checks if there's any events on hold to be fired to listeners
      */
     function _handlePubSub() {
-        var i, j, len;
+        var i, len;
         if (!_storage.__jstorage_meta.PubSub) {
             return;
         }
@@ -547,8 +550,8 @@
             }
         }
 
-        for(j = needFired.length - 1; j >= 0; j--){
-            _fireSubscribers(needFired[j][1], needFired[j][2]);
+        for (i = needFired.length - 1; i >= 0; i--) {
+            _fireSubscribers(needFired[i][1], needFired[i][2]);
         }
 
         _pubsub_last = _pubsubCurrent;
@@ -658,8 +661,10 @@
         switch (l) {
             case 3:
                 h ^= (str.charCodeAt(i + 2) & 0xff) << 16;
+                /* falls through */
             case 2:
                 h ^= (str.charCodeAt(i + 1) & 0xff) << 8;
+                /* falls through */
             case 1:
                 h ^= (str.charCodeAt(i) & 0xff);
                 h = (((h & 0xffff) * 0x5bd1e995) + ((((h >>> 16) * 0x5bd1e995) & 0xffff) << 16));
