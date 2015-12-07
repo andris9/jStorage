@@ -1,0 +1,19 @@
+{
+  "name": "jstorage",
+  "version": "0.4.12",
+  "description": "jStorage is a cross-browser key-value store database to store data locally in the browser ",
+  "keywords": [
+    "jStorage"
+  ],
+  "homepage": "http://www.jstorage.info",
+  "bugs": "https://github.com/andris9/jStorage/issues",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/andris9/jStorage.git"
+  },
+  "main": "./jstorage.js",
+  "license": "MIT",
+  "devDependencies": {
+    "bump-version": "^0.5.0"
+  }
+}
