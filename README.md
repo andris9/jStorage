@@ -1,6 +1,6 @@
 ## NB!
 
-**If you don't need to support older Internet Explorer Versions (IE7 and below), use [simpleStorage](https://github.com/andris9/simpleStorage) instead.**
+> This project is in a frozen state. No more API changes. Pull requests for bug fixes are welcomed, anything else gets most probably ignored. A bug is something that breaks the application, outdated package file is not a bug.
 
 ----
 
