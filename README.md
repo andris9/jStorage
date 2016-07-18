@@ -57,8 +57,9 @@ Sets a TTL (in milliseconds) for an existing key. Use 0 or negative value to cle
 
 ```javascript
 ttl = $.jStorage.getTTL("mykey"); // TTL in milliseconds or 0
-Gets remaining TTL (in milliseconds) for a key or 0 if not TTL has been set.
 ```
+
+Gets remaining TTL (in milliseconds) for a key or 0 if not TTL has been set.
 
 ### flush()
 
