@@ -182,20 +182,8 @@ Safari 4+, Chrome 4+, Opera 10.50+
 If the browser doesn't support data caching, then no exceptions are raised - jStorage can still
 be used by the script but nothing is actually stored.
 
-## Tests
-
-See [tests/index.html](http://www.jstorage.info/static/tests/index.html) for unit tests
-
-## Docs
-
-Project homepage and docs: [www.jstorage.info](http://www.jstorage.info)
-
 ## License
 
 [Unlicense](http://unlicense.org/) Since version 0.4.7
 
 **MIT** (versions up to 0.4.6)
-
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/andris9/jstorage/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
-
