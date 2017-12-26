@@ -1,6 +1,6 @@
 {
   "name": "jStorage",
-  "version": "0.4.12",
+  "version": "0.4.13",
   "main": "./jstorage.js",
   "author": "Andris Reinman <andris.reinman@gmail.com>",
   "dependencies": {}
